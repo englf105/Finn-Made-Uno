@@ -37,30 +37,31 @@ class Game():
 
 def main():
 
+    card_quantity = 7
+    order_multiplier = 1
+    player.Hand.DrawCard(7) # Starting amount of cards
+
     Game.checkPlayerAmount(Game)
 
     players = []
     for i in range(Game.player_amount):
         players.append(player_ai)
 
-    card_quantity = 7
-    order_multiplier = 1
-    player.Hand.DrawCard(7) # Starting amount of cards
-
     # Game Loop
     while (card_quantity > 0):
         
+
         if (Game.turn == 1):
             print(f"\n===== Your turn =====")
         else:
             print(f"\n===== Player {Game.turn} turn =====")
 
-        if (Game.turn == 1):
+
+        if (Game.turn == 1): # During the player's turn
             
             print(f"Current card color: {Game.game_card[0]}")
             print(f"Current card number: {Game.game_card[1]}")
             print(f"Cards in hand: {(", ").join(player.Hand.display_cards)}")
-
             decision = input("\nPress enter to continue: ")
             
             if (decision == "d"):
@@ -104,7 +105,9 @@ def main():
 
                     else:
                         print("\n///// Invalid Card Selected /////")
-        else:
+        
+
+        elif (Game.turn != 1): # During the AI's turn
             Game.nextTurn(Game, order_multiplier)
 
 
