@@ -3,9 +3,9 @@ Uno Game
 by: Finn English
 """
 
+import card
 import player
 import player_ai
-import card
 
 class Game():
     
@@ -37,20 +37,20 @@ class Game():
 
 def main():
 
+    my_player = player.Player()
     card_quantity = 7
     order_multiplier = 1
-    player.Hand.DrawCard(7) # Starting amount of cards
 
     Game.checkPlayerAmount(Game)
 
     players = []
-    for i in range(Game.player_amount):
+    for i in range(Game.player_amount - 1):
         players.append(player_ai)
 
     # Game Loop
     while (card_quantity > 0):
         
-
+        
         if (Game.turn == 1):
             print(f"\n===== Your turn =====")
         else:
@@ -61,28 +61,28 @@ def main():
             
             print(f"Current card color: {Game.game_card[0]}")
             print(f"Current card number: {Game.game_card[1]}")
-            print(f"Cards in hand: {(", ").join(player.Hand.display_cards)}")
+            print(f"Cards in hand: {my_player.hand}")
             decision = input("\nPress enter to continue: ")
             
             if (decision == "d"):
-                player.Hand.DrawCard(1)
+                my_player.hand.drawCard(1)
                 print("\n===== Drew a card! =====")
 
             if decision.isdigit():
                 card_num = int(decision)-1
-                if (int(decision) >= 1 and int(decision) <= len(player.Hand.player_cards)):
+                if (int(decision) >= 1 and int(decision) <= len(my_player.hand)):
 
                     """ If the card or number is the same as the current game card"""
-                    if (Game.game_card[0] == player.Hand.player_cards[card_num][0] or Game.game_card[1] == player.Hand.player_cards[card_num][1]):
+                    if (Game.game_card[0] == my_player.hand[card_num][0] or Game.game_card[1] == my_player.hand[card_num][1]):
 
-                        print(f"\n===== A {player.Hand.display_cards[card_num]} was placed! =====")
+                        print(f"\n===== A {my_player.hand[card_num]} was placed! =====")
 
                         """ Set the card placed to the current card """
-                        Game.game_card[1] = player.Hand.player_cards[card_num][1] # Card Number
-                        Game.game_card[0] = player.Hand.player_cards[card_num][0] # Card Color
+                        Game.game_card[1] = my_player.hand[card_num][1] # Card Number
+                        Game.game_card[0] = my_player.hand[card_num][0] # Card Color
 
                         if (Game.game_card[1] == "plus"):
-                            player.Hand.DrawCard(2)
+                            my_player.hand.drawCard(2)
                             print("\n===== Drew two more cards! =====")
                         
                         if (Game.game_card[1] == "reverse"):
@@ -98,8 +98,7 @@ def main():
                             print("\n===== A turn was skipped! =====")
 
                         """ Delete the placed card from the hand """
-                        del player.Hand.player_cards[card_num] # Removing from the actual hand
-                        del player.Hand.display_cards[card_num] # Removing from the terminal display
+                        del my_player.hand[card_num] # Removing from the actual hand
 
                         Game.nextTurn(Game, order_multiplier)
 
@@ -109,6 +108,7 @@ def main():
 
         elif (Game.turn != 1): # During the AI's turn
             Game.nextTurn(Game, order_multiplier)
+            print(players[Game.turn - 2])
 
 
 if __name__ == "__main__":

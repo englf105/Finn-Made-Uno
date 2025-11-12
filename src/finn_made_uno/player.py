@@ -1,12 +1,7 @@
-import card
+import hand
 
-class Hand:
-    
-    player_cards = []
-    display_cards = []
+class Player:
 
-    def DrawCard(amount):
-        for i in range(amount):
-            new_card = card.Card.randomCard()
-            Hand.player_cards.append(new_card)
-            Hand.display_cards.append(("_").join(new_card))
+    def __init__(self):
+        self.hand = hand.Hand() # Creating the player's hand
+        self.hand.drawCard(7) # Starting amount of cards

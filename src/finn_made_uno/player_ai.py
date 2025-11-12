@@ -1,10 +1,7 @@
-import card
+import hand
 
-class Hand:
+class Ai:
     
-    player_cards = []
-
-    def AiDrawCard(amount):
-        for i in range(amount):
-            new_card = card.Card.randomCard()
-            Hand.player_cards.append(new_card)
+    def __init__(self):
+        self.hand = hand.Hand
+        self.hand.drawCard(7)
