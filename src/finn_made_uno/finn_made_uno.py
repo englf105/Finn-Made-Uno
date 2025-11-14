@@ -3,6 +3,7 @@ Uno Game
 by: Finn English
 """
 
+
 import game
 import player
 import player_ai
@@ -15,6 +16,7 @@ def main():
     card_quantity = 7
     order_multiplier = 1
 
+    uno.setRandomCard()
     uno.checkPlayerAmount()
 
     players = []
@@ -24,7 +26,7 @@ def main():
     # Game Loop
     while (card_quantity > 0):
         
-        
+        """ Diplaying whose turn it is in the console"""
         if (uno.turn == 1):
             print(f"\n===== Your turn =====")
         else:

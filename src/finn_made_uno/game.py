@@ -6,13 +6,14 @@ class Game():
     turn = 1
     game_card = ""
 
-    game_card = card.Card.randomCard()
-    while (game_card[1] == "skip" or game_card[1] == "reverse" or game_card[1] == "plus"):
-        game_card = card.Card.randomCard()
-
     def __init__(self):
         print(f"===== Welcome to Uno! =====")
         print(f"\nTurn: {Game.turn}")        
+
+    def setRandomCard(self):
+        self.game_card = card.Card.randomCard()
+        while (self.game_card[1] == "skip" or self.game_card[1] == "reverse" or self.game_card[1] == "plus"):
+            self.game_card = card.Card.randomCard()
 
     def checkPlayerAmount(self):
         while (self.player_amount > 4 or self.player_amount < 2):
