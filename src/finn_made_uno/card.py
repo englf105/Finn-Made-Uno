@@ -19,4 +19,4 @@ class Card:
     def randomCard():
         random_color = random.choice(Card.color)
         random_num = random.choice(Card.number)
-        return [random_color, str(random_num)]
+        return Card(random_color, random_num)

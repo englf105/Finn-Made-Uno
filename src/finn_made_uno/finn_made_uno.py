@@ -14,13 +14,12 @@ def main():
     uno = game.Game()
     my_player = player.Player()
     card_quantity = 7
-    order_multiplier = 1
 
     uno.setRandomCard()
     uno.checkPlayerAmount()
 
     players = []
-    for i in range(uno.player_amount - 1):
+    for i in range(uno.player_amount):
         players.append(player_ai.Ai())
 
     # Game Loop
@@ -35,8 +34,7 @@ def main():
 
         if (uno.turn == 1): # During the player's turn
             
-            print(f"Current card color: {uno.game_card[0]}")
-            print(f"Current card number: {uno.game_card[1]}")
+            print(f"Current card: {uno.game_card[0]}_{uno.game_card[1]}")
             print(f"Cards in hand: {my_player.hand}")
             decision = input("\nPress enter to continue: ")
             
@@ -54,14 +52,14 @@ def main():
                         print(f"\n===== A {my_player.hand.cards[card_num]} was placed! =====")
                         uno.placeCard(my_player.hand.cards, card_num) # Places Card from hand
                         uno.checkEffect(my_player.hand) # Applies effects skip, plus, or reverse
-                        uno.nextTurn(order_multiplier) # Goes to the next turn
+                        uno.nextTurn() # Goes to the next turn
 
                     else:
                         print("\n///// Invalid Card Selected /////")
         
 
         elif (uno.turn != 1): # During the AI's turn
-            uno.nextTurn(order_multiplier)
+            uno.nextTurn()
             current_bot = players[uno.turn - 2]
             print(current_bot.hand.cards)
 #            for j in range(len(current_bot.hand.cards)):

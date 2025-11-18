@@ -8,7 +8,7 @@ class Hand:
     def __str__(self):
         if self.cards:
             rep = ""
-            for card in self.cards:
+            for card in (self.cards):
                 rep += str(card)
         else:
             rep = "<empty>"
