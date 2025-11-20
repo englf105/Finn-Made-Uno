@@ -12,13 +12,15 @@ import player_ai
 def main():
 
     uno = game.Game()
-    my_player = player.Player()
     card_quantity = 7
 
     uno.setRandomCard()
     uno.checkPlayerAmount()
 
     players = []
+
+    players.append(player.Player())
+
     for i in range(uno.player_amount):
         players.append(player_ai.Ai())
 
@@ -26,42 +28,42 @@ def main():
     while (card_quantity > 0):
         
         """ Diplaying whose turn it is in the console"""
-        if (uno.turn == 1):
+        if (uno.turn == 0):
             print(f"\n===== Your turn =====")
         else:
-            print(f"\n===== Player {uno.turn} turn =====")
+            print(f"\n===== Player {uno.turn + 1} turn =====")
 
 
-        if (uno.turn == 1): # During the player's turn
+        if (uno.turn == 0): # During the player's turn
             
-            print(f"Current card: {uno.game_card[0]}_{uno.game_card[1]}")
-            print(f"Cards in hand: {my_player.hand}")
+            print(f"Current card: {uno.game_card.color}_{uno.game_card.number}")
+            print(f"Cards in hand: {players[0].hand}")
             decision = input("\nPress enter to continue: ")
             
             if (decision == "d"):
-                my_player.hand.drawCard(1)
+                players[0].hand.drawCard(1)
                 print("\n===== Drew a card! =====")
 
             if decision.isdigit():
                 card_num = int(decision)-1
-                if (int(decision) >= 1 and int(decision) <= len(my_player.hand.cards)):
+                if (int(decision) >= 1 and int(decision) <= len(players[0].hand.cards)):
 
                     """ If the card or number is the same as the current game card"""
-                    if (uno.game_card[0] == my_player.hand.cards[card_num][0] or uno.game_card[1] == my_player.hand.cards[card_num][1]):
+                    if (uno.game_card.color == players[0].hand.cards[card_num].color or uno.game_card.number == players[0].hand.cards[card_num].number):
 
-                        print(f"\n===== A {my_player.hand.cards[card_num]} was placed! =====")
-                        uno.placeCard(my_player.hand.cards, card_num) # Places Card from hand
-                        uno.checkEffect(my_player.hand) # Applies effects skip, plus, or reverse
+                        print(f"\n===== A {players[0].hand.cards[card_num]} was placed! =====")
+                        uno.placeCard(players[0].hand.cards, card_num) # Places Card from hand
+                        uno.checkEffect(players[0].hand, players) # Applies effects skip, plus, or reverse
                         uno.nextTurn() # Goes to the next turn
 
                     else:
                         print("\n///// Invalid Card Selected /////")
         
 
-        elif (uno.turn != 1): # During the AI's turn
+        elif (uno.turn != 0): # During the AI's turn
+            current_bot = players[uno.turn]
+            print(current_bot)
             uno.nextTurn()
-            current_bot = players[uno.turn - 2]
-            print(current_bot.hand.cards)
 #            for j in range(len(current_bot.hand.cards)):
 #                if (uno.game_card[0] == (current_bot.hand.cards[card_num][0])):
                 

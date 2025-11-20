@@ -7,4 +7,4 @@ class Ai:
         self.hand.drawCard(7) # Starting amount of cards
 
     def __str__(self):
-        print(f"\nAi's Hand: {self.hand}")
+        return f"Ai's Hand: {self.hand}"

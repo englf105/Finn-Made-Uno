@@ -9,7 +9,7 @@ class Hand:
         if self.cards:
             rep = ""
             for card in (self.cards):
-                rep += str(card)
+                rep += str(card) + ", "
         else:
             rep = "<empty>"
         return rep
