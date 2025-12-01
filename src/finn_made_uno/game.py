@@ -8,7 +8,7 @@ class Game():
     game_card = ""
 
     def __init__(self):
-        print(f"===== Welcome to Uno! =====")       
+        print(f"\033[33m===== Welcome to Uno! =====\033[0m")       
 
     def setRandomCard(self):
         self.game_card = card.Card.randomCard()
@@ -21,21 +21,20 @@ class Game():
             if (self.player_amount > 4 or self.player_amount < 2):
                 print("\n///// Invalid amount of players /////")
     
-    def checkEffect(self, hand, players):
+    def checkEffect(self, player, players):
         if (self.game_card.number == "plus"):
+            plus_turn = self.turn
+            plus_turn += self.order_multiplier
+            if (plus_turn > self.player_amount): # If the turn goes over # of players
+                plus_turn = 0
+            if (plus_turn) < 0: # If the turn goes under 0
+                plus_turn = self.player_amount
 
-            if ((self.turn == 0) and (self.order_multiplier == -1)):
-                players[len(players) - 1].hand.drawCard(2)
-                print(f"\n===== Player {len(players)} drew two cards! =====")
-
-            elif (self.turn == len(players) - 1) and (self.order_multiplier == 1):
-                players[0].hand.drawCard(2)
+            players[plus_turn].hand.drawCard(2)
+            if (plus_turn == 0):
                 print(f"\n===== You drew two cards! =====")
-
             else:
-                players[self.turn + (1 * self.order_multiplier)].hand.drawCard(2)
-                print(f"\n===== Player {self.turn + (1 * self.order_multiplier)} drew two cards! =====")
-
+                print(f"\n===== Player {plus_turn + 1} drew two cards! =====")
         
         if (self.game_card.number == "reverse"):
             self.order_multiplier = self.order_multiplier * -1
