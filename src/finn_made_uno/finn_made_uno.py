@@ -5,8 +5,8 @@ by: Finn English
 
 
 import game
-import player
-import player_ai
+from player import Player
+from player_ai import Ai
 
 
 def main():
@@ -14,19 +14,22 @@ def main():
     uno = game.Game()
 
     players = []
-    players.append(player.Player())
+    players.append(Ai())
     for i in range(uno.player_amount):
-        players.append(player_ai.Ai())
+        players.append(Ai())
 
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
-    while (least_cards > 0):
+    while (len(players[uno.turn].hand.cards) != 0):
 
         uno.displayTurnInfo(players)
 
-        if (uno.turn == 0): # During the player's turn
-            
+        if isinstance(players[uno.turn], Player): # During the player's turn
+
+            if least_cards == 0:
+                break
+
             decision = input("\nPress enter to continue: ")
             
             if (decision == "d"):
@@ -44,14 +47,22 @@ def main():
                         print(f"\n\033[32m===== A {player_cards[card_num]} was placed! =====\033[0m")
                         uno.placeCard(player_cards, card_num) # Places Card from hand
                         uno.checkEffect(players) # Applies effects skip, plus, or reverse
-                        uno.checkWin(players, least_cards)
+
+                        if least_cards < len(players[uno.turn].hand.cards):
+                            least_cards = len(players[uno.turn].hand.cards)
+                            if least_cards == 0:
+                                break
+
                         uno.nextTurn() # Goes to the next turn
                     else:
                         print("\n///// Invalid Card Selected /////")
         
-        elif (uno.turn != 0): # During the AI's turn
+        elif isinstance(players[uno.turn], Ai): # During the AI's turn
 
-            card_placed = 0
+            if least_cards == 0:
+                break
+
+            card_placed = False
             current_bot = players[uno.turn]
             bot_cards = players[uno.turn].hand.cards
 
@@ -61,12 +72,16 @@ def main():
                     print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
                     uno.placeCard(bot_cards, item) # Places Card from hand
                     uno.checkEffect(players) # Applies effects skip, plus, or reverse
-                    uno.checkWin(players, least_cards)
+
+                    if least_cards < len(players[uno.turn].hand.cards):
+                        least_cards = len(players[uno.turn].hand.cards)
+                        if least_cards == 0:
+                            break
                     uno.nextTurn()
-                    card_placed = 1
+                    card_placed = True
                     break # Ends card search after card is placed
             
-            if (card_placed == 0):
+            if (card_placed == False):
                 print("\n\033[32m===== Drew a card! =====\033[0m")
                 current_bot.hand.drawCard(1)
                 uno.nextTurn()

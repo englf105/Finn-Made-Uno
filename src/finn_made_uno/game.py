@@ -21,7 +21,7 @@ class Game():
         while (self.player_amount > 4 or self.player_amount < 2):
             self.player_amount = (int(input("Enter amount of players (2-4): ")) - 1)
             if (self.player_amount > 4 or self.player_amount < 2):
-                print("\n///// Invalid amount of players /////")
+                print("\n///// Invalid amount of players /////\n")
 
     def displayTurnInfo(self, players):
         """ Diplaying turn info in the console"""
@@ -63,10 +63,6 @@ class Game():
             if (self.turn) < 0: 
                 self.turn = self.player_amount
             print("\n===== A turn was skipped! =====") 
-
-    def checkWin(self, players, least_cards):
-        if (least_cards > len(players[self.turn].hand.cards)):
-            least_cards = len(players[self.turn].hand.cards)
 
     def nextTurn(self):
         self.turn += (1 * self.order_multiplier)
