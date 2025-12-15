@@ -14,8 +14,8 @@ def main():
     uno = game.Game()
 
     players = []
-    players.append(Ai())
-    for i in range(uno.player_amount):
+    players.append(Player())
+    for item in range(uno.player_amount):
         players.append(Ai())
 
     least_cards = len(players[uno.turn].hand.cards)
@@ -26,11 +26,9 @@ def main():
         uno.displayTurnInfo(players)
 
         if isinstance(players[uno.turn], Player): # During the player's turn
-
             Player.playerTurn(uno, players)
-        
-        elif isinstance(players[uno.turn], Ai): # During the AI's turn
 
+        elif isinstance(players[uno.turn], Ai): # During the AI's turn
             Ai.botTurn(uno, players)
 
         if least_cards > len(players[uno.turn].hand.cards):

@@ -3,7 +3,7 @@ import card
 class Game():
     
     order_multiplier = 1
-    player_amount = 1
+    player_amount = 0
     turn = 0
     game_card = ""
 
@@ -18,9 +18,9 @@ class Game():
             self.game_card = card.Card.randomCard()
 
     def checkPlayerAmount(self):
-        while (self.player_amount > 4 or self.player_amount < 2):
-            self.player_amount = (int(input("Enter amount of players (2-4): ")) - 1)
-            if (self.player_amount > 4 or self.player_amount < 2):
+        while (self.player_amount > 3 or self.player_amount < 1):
+            self.player_amount = int(input("Enter amount of players (2-4): ")) - 1
+            if (self.player_amount > 3 or self.player_amount < 1):
                 print("\n///// Invalid amount of players /////\n")
 
     def displayTurnInfo(self, players):
