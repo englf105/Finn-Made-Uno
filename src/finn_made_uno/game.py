@@ -55,7 +55,7 @@ class Game():
             else: 
                 print(f"\n===== Player {plus_turn + 1} drew two cards! =====")
         
-        if (self.game_card.number == "choose"):
+        if (self.game_card.color == "wild"):
             if isinstance(players[self.turn], Player):
                 color = input("Enter color you wish to change to (r/y/g/b): ")
                 if color == "r":
@@ -73,6 +73,20 @@ class Game():
                     wild += 1
                     if wild > len(players[self.turn].hand.cards):
                         self.game_card.color = random.choice(card.Card.color)
+            if self.game_card.number == "plus_4":
+                plus_turn = self.turn
+                plus_turn += self.order_multiplier
+                if (plus_turn > self.player_amount): # If the turn goes over # of players
+                    plus_turn = 0 
+                if (plus_turn) < 0: # If the turn goes under 0
+                    plus_turn = self.player_amount 
+
+                players[plus_turn].hand.drawCard(4)
+                if (plus_turn == 0): 
+                    print(f"\n===== You drew four cards! =====")
+                else: 
+                    print(f"\n===== Player {plus_turn + 1} drew four cards! =====")
+                    
             self.game_card.number = "<any>"
             print(f"\n===== Color has been changed to {self.game_card.color}! =====")
 
