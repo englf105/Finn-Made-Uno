@@ -1,4 +1,7 @@
 import card
+import random
+from player import Player
+from player_ai import Ai
 
 class Game():
     
@@ -14,7 +17,7 @@ class Game():
 
     def setRandomCard(self):
         self.game_card = card.Card.randomCard()
-        while (self.game_card.number == "skip" or self.game_card.number == "reverse" or self.game_card.number == "plus"):
+        while (self.game_card.number == "skip" or self.game_card.number == "reverse" or self.game_card.number == "plus" or self.game_card.color == "wild"):
             self.game_card = card.Card.randomCard()
 
     def checkPlayerAmount(self):
@@ -52,6 +55,27 @@ class Game():
             else: 
                 print(f"\n===== Player {plus_turn + 1} drew two cards! =====")
         
+        if (self.game_card.number == "choose"):
+            if isinstance(players[self.turn], Player):
+                color = input("Enter color you wish to change to (r/y/g/b): ")
+                if color == "r":
+                    self.game_card.color = "red"
+                elif color == "y":
+                    self.game_card.color = "yellow"
+                elif color == "g":
+                    self.game_card.color = "green"
+                elif color == "b":
+                    self.game_card.color = "blue"
+            elif isinstance(players[self.turn], Ai):
+                wild = 0
+                while self.game_card.color == "wild":
+                    self.game_card.color = players[self.turn].hand.cards[wild].color
+                    wild += 1
+                    if wild > len(players[self.turn].hand.cards):
+                        self.game_card.color = random.choice(card.Card.color)
+            self.game_card.number = "<any>"
+            print(f"\n===== Color has been changed to {self.game_card.color}! =====")
+
         if (self.game_card.number == "reverse"):
             self.order_multiplier = self.order_multiplier * -1
             print("\n===== The turns are reversed! =====")

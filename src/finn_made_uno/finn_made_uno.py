@@ -14,7 +14,7 @@ def main():
     uno = game.Game()
 
     players = []
-    players.append(Player())
+    players.append(Ai())
     for item in range(uno.player_amount):
         players.append(Ai())
 
