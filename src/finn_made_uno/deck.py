@@ -3,15 +3,13 @@ from card import Card
 class Deck:
 
     def __init__(self):
-        self.deck_cards = []
-        for item in (Card.color not in "wild"):
-            for item in Card.number:
-                self.deck_cards.append(Card(Card.color, Card.number))
+        self.deck = [Card(color, number) for color in Card.color in deck if Card.color != "wild" for number in Card.number]
+        self.discards = []
 
     def __str__(self):
-        if self.cards:
+        if self.deck:
             rep = ""
-            for card in (self.cards):
+            for card in (self.deck):
                 rep += str(card) + ", "
         else:
             rep = "<empty>"
@@ -20,4 +18,8 @@ class Deck:
     def drawCard(self, amount):
         for i in range(amount):
             new_card = Card.randomCard()
-            self.cards.append(new_card)
+            self.deck.append(new_card)
+
+if __name__ == "__main__":
+    deck = Deck()
+    print(deck)
