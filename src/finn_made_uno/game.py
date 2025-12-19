@@ -17,48 +17,36 @@ class Game():
 
     def setRandomCard(self):
         self.game_card = card.Card.randomCard()
-        while (self.game_card.number == "skip" or self.game_card.number == "reverse" or self.game_card.number == "plus" or self.game_card.color == "wild"):
+        forbidden_cards = ["skip", "reverse", "plus", "wild"]
+        while (self.game_card.number not in forbidden_cards):
             self.game_card = card.Card.randomCard()
 
     def checkPlayerAmount(self):
         while (self.player_amount > 3 or self.player_amount < 1):
             self.player_amount = int(input("Enter amount of players (2-4): ")) - 1
             if (self.player_amount > 3 or self.player_amount < 1):
-                print("\n///// Invalid amount of players /////\n")
+                print("\n///// Invalid  amount of players /////\n")
 
     def displayTurnInfo(self, players):
-        """ Diplaying turn info in the console"""
-        if (self.turn == 0): 
-            print(f"\n\033[33m===== Your turn =====\033[0m")
-        else: 
-            print(f"\n\033[33m===== Player {self.turn + 1} turn =====\033[0m")
-        print(f"Current card: {self.game_card.color}_{self.game_card.number}")
+        print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
+        print(f"Current card: {self.game_card}")
         print(players[self.turn])
 
     def placeCard(self, cards, card_num):
-        self.game_card.color = cards[card_num].color # Card Color
-        self.game_card.number = cards[card_num].number # Card Number
-        del cards[card_num] # Removing from the actual hand
+        self.game_card = cards[card_num] # Card color
+        del cards[card_num] # Removing card from hand
     
     def checkEffect(self, players):
-        if (self.game_card.number == "plus"):
-            plus_turn = self.turn
-            plus_turn += self.order_multiplier
-            if (plus_turn > self.player_amount): # If the turn goes over # of players
-                plus_turn = 0 
-            if (plus_turn) < 0: # If the turn goes under 0
-                plus_turn = self.player_amount 
-
-            players[plus_turn].hand.drawCard(2)
-            if (plus_turn == 0): 
-                print(f"\n===== You drew two cards! =====")
-            else: 
-                print(f"\n===== Player {plus_turn + 1} drew two cards! =====")
+        self.checkWild(players)
+        self.checkPlus(players)
+        self.checkReverse()
+        self.checkSkip()
         
+    def checkWild(self, players):
         if (self.game_card.color == "wild"):
             if isinstance(players[self.turn], Player):
                 color = input("Enter color you wish to change to (r/y/g/b): ")
-                if color == "r":
+                if color == "r": 
                     self.game_card.color = "red"
                 elif color == "y":
                     self.game_card.color = "yellow"
@@ -69,42 +57,58 @@ class Game():
             elif isinstance(players[self.turn], Ai):
                 wild = 0
                 while self.game_card.color == "wild":
-                    self.game_card.color = players[self.turn].hand.cards[wild].color
+                    if len(players[self.turn].hand.cards) > 0:
+                        self.game_card.color = players[self.turn].hand.cards[wild].color
+                    else:
+                        break
                     wild += 1
                     if wild > len(players[self.turn].hand.cards):
                         self.game_card.color = random.choice(card.Card.color)
             if self.game_card.number == "plus_4":
                 plus_turn = self.turn
                 plus_turn += self.order_multiplier
-                if (plus_turn > self.player_amount): # If the turn goes over # of players
-                    plus_turn = 0 
-                if (plus_turn) < 0: # If the turn goes under 0
-                    plus_turn = self.player_amount 
-
+                plus_turn = self.turnLimit(plus_turn, self.player_amount)
                 players[plus_turn].hand.drawCard(4)
-                if (plus_turn == 0): 
-                    print(f"\n===== You drew four cards! =====")
-                else: 
-                    print(f"\n===== Player {plus_turn + 1} drew four cards! =====")
-                    
+                print(f"\n===== {self.displayName(plus_turn, False)} drew four cards! =====")
             self.game_card.number = "<any>"
             print(f"\n===== Color has been changed to {self.game_card.color}! =====")
 
+    def checkPlus(self, players):
+        if (self.game_card.number == "plus"):
+            plus_turn = self.turn
+            plus_turn += self.order_multiplier
+            plus_turn = self.turnLimit(plus_turn, self.player_amount)
+            players[plus_turn].hand.drawCard(2)
+            print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
+
+    def checkReverse(self):
         if (self.game_card.number == "reverse"):
             self.order_multiplier = self.order_multiplier * -1
             print("\n===== The turns are reversed! =====")
 
+    def checkSkip(self):
         if (self.game_card.number == "skip"):
-            self.turn += (1 * self.order_multiplier)
-            if (self.turn > self.player_amount): 
-                self.turn = 0
-            if (self.turn) < 0: 
-                self.turn = self.player_amount
+            self.turn += (self.order_multiplier)
+            self.turn = self.turnLimit(self.turn, self.player_amount)
             print("\n===== A turn was skipped! =====") 
 
+    def displayName(self, turn, possesive):
+        if (turn == 0): 
+            if possesive == True:
+                return "Your"
+            else:
+                return "You"
+        else: 
+            return f"Player {turn + 1}"
+
+    def turnLimit(self, turn, limit):
+        if (turn > limit): # If the turn goes over # of players
+            return 0
+        elif (turn) < 0: # If the turn goes under 0
+            return limit
+        else: # If no conditions apply
+            return turn
+        
     def nextTurn(self):
         self.turn += (1 * self.order_multiplier)
-        if (self.turn > self.player_amount): # If the turn goes over # of players
-            self.turn = 0
-        if (self.turn) < 0: # If the turn goes under 0
-            self.turn = self.player_amount
+        self.turn = self.turnLimit(self.turn, self.player_amount)

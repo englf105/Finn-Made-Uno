@@ -1,9 +1,12 @@
 from card import Card
 
-class Hand:
+class Deck:
 
     def __init__(self):
-        self.cards = []
+        self.deck_cards = []
+        for item in (Card.color not in "wild"):
+            for item in Card.number:
+                self.deck_cards.append(Card(Card.color, Card.number))
 
     def __str__(self):
         if self.cards:

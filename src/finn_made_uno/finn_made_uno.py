@@ -11,13 +11,12 @@ from player_ai import Ai
 
 def main():
 
+    # Game setup
     uno = game.Game()
-
     players = []
-    players.append(Ai())
+    players.append(Ai()) # Adds player to first player slot
     for item in range(uno.player_amount):
         players.append(Ai())
-
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
@@ -25,10 +24,10 @@ def main():
 
         uno.displayTurnInfo(players)
 
-        if isinstance(players[uno.turn], Player): # During the player's turn
+        if isinstance(players[uno.turn], Player): # During player's turn
             Player.playerTurn(uno, players)
 
-        elif isinstance(players[uno.turn], Ai): # During the AI's turn
+        elif isinstance(players[uno.turn], Ai): # During AI's turn
             Ai.botTurn(uno, players)
 
         if least_cards > len(players[uno.turn].hand.cards):
@@ -36,7 +35,7 @@ def main():
         if least_cards == 0:
             break
 
-        uno.nextTurn() # Goes to the next turn
+        uno.nextTurn() # Goes to next turn
 
     print(f"\n\033[34m===== Player {uno.turn + 1} won Uno! =====\033[0m\n")
         
