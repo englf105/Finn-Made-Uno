@@ -2,14 +2,14 @@ import hand
 
 class Ai:
     
-    def __init__(self):
+    def __init__(self, deck):
         self.hand = hand.Hand() # Creating the player's hand
-        self.hand.drawCard(7) # Starting amount of cards
+        self.hand.drawCard(7, deck) # Starting amount of cards
 
     def __str__(self):
         return f"Ai's Hand: {self.hand}"
     
-    def botTurn(uno, players):
+    def botTurn(uno, players, deck):
         card_placed = False
         bot_cards = players[uno.turn].hand.cards
 
@@ -17,11 +17,11 @@ class Ai:
         for item in range(len(bot_cards)):
             if ((uno.game_card.color == bot_cards[item].color or bot_cards[item].color == "wild") or uno.game_card.number == bot_cards[item].number):
                 print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
-                uno.placeCard(bot_cards, item) # Places Card from hand
+                uno.placeCard(bot_cards, item, deck) # Places Card from hand
                 uno.checkEffect(players) # Applies effects skip, plus, or reverse
                 card_placed = True
                 break # Ends card search after card is placed
         
         if (card_placed == False):
             print("\n\033[32m===== Drew a card! =====\033[0m")
-            players[uno.turn].hand.drawCard(1)
+            players[uno.turn].hand.drawCard(1, deck)

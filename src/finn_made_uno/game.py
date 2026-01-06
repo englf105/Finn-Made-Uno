@@ -32,9 +32,10 @@ class Game():
         print(f"Current card: {self.game_card}")
         print(players[self.turn])
 
-    def placeCard(self, cards, card_num):
+    def placeCard(self, cards, card_num, deck):
         self.game_card = cards[card_num] # Card color
-        del cards[card_num] # Removing card from hand
+        deck.discards.append(card_num) # Putting card into discard pile
+        cards.remove(card_num) # Removing the card from hand
     
     def checkEffect(self, players):
         self.checkWild(players)

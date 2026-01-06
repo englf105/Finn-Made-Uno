@@ -1,4 +1,5 @@
 from card import Card
+import random
 
 class Hand:
 
@@ -14,7 +15,8 @@ class Hand:
             rep = "<empty>"
         return rep
 
-    def drawCard(self, amount):
+    def drawCard(self, amount, deck):
         for i in range(amount):
-            new_card = Card.randomCard()
+            new_card = random.choice(deck.deck)
+            deck.deck.remove(new_card)
             self.cards.append(new_card)

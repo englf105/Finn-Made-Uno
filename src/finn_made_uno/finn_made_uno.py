@@ -7,16 +7,18 @@ by: Finn English
 import game
 from player import Player
 from player_ai import Ai
+from deck import Deck
 
 
 def main():
 
     # Game setup
     uno = game.Game()
+    deck = Deck()
     players = []
-    players.append(Ai()) # Adds player to first player slot
+    players.append(Ai(deck)) # Adds player to first player slot
     for item in range(uno.player_amount):
-        players.append(Ai())
+        players.append(Ai(deck))
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
@@ -25,10 +27,10 @@ def main():
         uno.displayTurnInfo(players)
 
         if isinstance(players[uno.turn], Player): # During player's turn
-            Player.playerTurn(uno, players)
+            Player.playerTurn(uno, players, deck)
 
         elif isinstance(players[uno.turn], Ai): # During AI's turn
-            Ai.botTurn(uno, players)
+            Ai.botTurn(uno, players, deck)
 
         if least_cards > len(players[uno.turn].hand.cards):
             least_cards = len(players[uno.turn].hand.cards)
