@@ -13,12 +13,12 @@ from deck import Deck
 def main():
 
     # Game setup
-    uno = game.Game()
     deck = Deck()
+    uno = game.Game(deck)
     players = []
-    players.append(Ai(deck)) # Adds player to first player slot
-    for item in range(uno.player_amount):
-        players.append(Ai(deck))
+    players.append(Ai(deck, uno)) # Adds player to first player slot
+    for player in range(uno.player_amount):
+        players.append(Ai(deck, uno))
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
@@ -40,6 +40,13 @@ def main():
         uno.nextTurn() # Goes to next turn
 
     print(f"\n\033[34m===== Player {uno.turn + 1} won Uno! =====\033[0m\n")
+
+    print(f"Cards in deck pile: {len(deck.deck)}")
+    print(f"Cards in discard pile: {len(uno.discards)}")
+    print(f"Times shuffled: {uno.times_shuffled}")
+
+    if uno.times_shuffled == 0:
+        main()
         
                 
 if __name__ == "__main__":
