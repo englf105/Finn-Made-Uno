@@ -2,6 +2,7 @@ from card import Card
 import random
 from player import Player
 from player_ai import Ai
+import copy
 
 class Game():
 
@@ -11,6 +12,7 @@ class Game():
         self.turn = 0
         self.discards = []
         self.times_shuffled = 0
+        self.display_card = ""
 
         print(f"\033[33m===== Welcome to Uno! =====\033[0m")    
         self.setRandomCard(deck)
@@ -33,12 +35,13 @@ class Game():
 
     def displayTurnInfo(self, players):
         print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
-        print(f"Current card: {self.discards[-1]}")
+        print(f"Current card: {self.display_card}")
         print(players[self.turn])
 
     def placeCard(self, cards, card_num):
         self.discards.append(cards[card_num]) # Putting card into discard pile
-        del cards[card_num] # Removing the card from hand
+        self.display_card = copy.cards[card_num]
+        cards.pop(card_num) # Removing the card from hand
     
     def checkEffect(self, players, deck, uno):
         self.checkWild(players, deck, uno)
@@ -51,32 +54,32 @@ class Game():
             if isinstance(players[self.turn], Player):
                 color = input("Enter color you wish to change to (r/y/g/b): ")
                 if color == "r": 
-                    self.discards[-1].color = "red"
+                    self.display_card.color = "red"
                 elif color == "y":
-                    self.discards[-1].color = "yellow"
+                    self.display_card.color = "yellow"
                 elif color == "g":
-                    self.discards[-1].color = "green"
+                    self.display_card.color = "green"
                 elif color == "b":
-                    self.discards[-1].color = "blue"
+                    self.display_card.color = "blue"
             elif isinstance(players[self.turn], Ai):
                 wild = 0
                 while self.discards[-1].color == "wild":
                     if len(players[self.turn].hand.cards) > 0:
                         if players[self.turn].hand.cards[wild].color != "wild":
-                            self.discards[-1].color = players[self.turn].hand.cards[wild].color
+                            self.display_card.color = players[self.turn].hand.cards[wild].color
                     else:
                         break
                     wild += 1
                     if wild > len(players[self.turn].hand.cards):
-                        self.discards[-1].color = random.choice(Card.color)
+                        self.display_card.color = random.choice(Card.color)
             if self.discards[-1].number == "plus_4":
                 plus_turn = self.turn
                 plus_turn += self.order_multiplier
                 plus_turn = self.turnLimit(plus_turn, self.player_amount)
                 players[plus_turn].hand.drawCard(4, deck, uno)
                 print(f"\n===== {self.displayName(plus_turn, False)} drew four cards! =====")
-            self.discards[-1].number = "<any>"
-            print(f"\n===== Color has been changed to {self.discards[-1].color}! =====")
+            self.display_card.number = "<any>"
+            print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
     def checkPlus(self, players, deck, uno):
         if (self.discards[-1].number == "plus"):
@@ -120,7 +123,7 @@ class Game():
 
     def shuffleDeck(self, deck):
         if not deck.deck:
-            print("\n===== A the deck has been shuffled! =====")
+            print("\n\033[34m===== A the deck has been shuffled! =====\033[0m")
             deck.deck = self.discards[:-1]
             self.discards = self.discards[-1:]
             self.times_shuffled += 1
