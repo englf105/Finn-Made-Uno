@@ -47,6 +47,8 @@ def main():
 
     if uno.times_shuffled == 0:
         main()
+    else:
+        main()
         
                 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ class Player:
                 if (uno.discards[-1].color == player_cards[card_num].color or player_cards[card_num].color == "wild") or uno.discards[-1].number == player_cards[card_num].number:
                     print(f"\n\033[32m===== A {player_cards[card_num]} was placed! =====\033[0m")
                     uno.placeCard(player_cards, card_num) # Places Card from hand
-                    uno.checkEffect(players, deck) # Applies effects skip, plus, or reverse
+                    uno.checkEffect(players, deck, uno) # Applies effects skip, plus, or reverse
                 else:
                     print("\n///// Invalid Card Selected /////")
         

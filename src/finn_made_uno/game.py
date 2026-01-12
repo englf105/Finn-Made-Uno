@@ -23,10 +23,13 @@ class Game():
             self.discards.append(deck.getRandomCard())
 
     def checkPlayerAmount(self):
+        self.player_amount = 3
+        """
         while (self.player_amount > 3 or self.player_amount < 1):
             self.player_amount = int(input("Enter amount of players (2-4): ")) - 1
             if (self.player_amount > 3 or self.player_amount < 1):
                 print("\n///// Invalid  amount of players /////\n")
+                """
 
     def displayTurnInfo(self, players):
         print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
@@ -59,7 +62,8 @@ class Game():
                 wild = 0
                 while self.discards[-1].color == "wild":
                     if len(players[self.turn].hand.cards) > 0:
-                        self.discards[-1].color = players[self.turn].hand.cards[wild].color
+                        if players[self.turn].hand.cards[wild].color != "wild":
+                            self.discards[-1].color = players[self.turn].hand.cards[wild].color
                     else:
                         break
                     wild += 1
@@ -114,15 +118,14 @@ class Game():
         self.turn += (1 * self.order_multiplier)
         self.turn = self.turnLimit(self.turn, self.player_amount)
 
-    def shuffleDeck(self, deck, uno):
-        if deck:
+    def shuffleDeck(self, deck):
+        if not deck.deck:
             print("\n===== A the deck has been shuffled! =====")
-            self.discards.sort(key=lambda s: (Card.color.index(s.color), s.number))
-            deck = self.discards[:-1]
-            self.discards[-1:] = []
+            deck.deck = self.discards[:-1]
+            self.discards = self.discards[-1:]
             self.times_shuffled += 1
         else:
-            self.shuffleDeck()
+            self.shuffleDeck(deck)
 
 
 

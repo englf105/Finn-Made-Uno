@@ -18,7 +18,7 @@ class Ai:
             if ((uno.discards[-1].color == bot_cards[item].color or bot_cards[item].color == "wild") or uno.discards[-1].number == bot_cards[item].number):
                 print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
                 uno.placeCard(bot_cards, item) # Places Card from hand
-                uno.checkEffect(players, deck) # Applies effects skip, plus, or reverse
+                uno.checkEffect(players, deck, uno) # Applies effects skip, plus, or reverse
                 card_placed = True
                 break # Ends card search after card is placed
         
