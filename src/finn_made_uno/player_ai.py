@@ -15,7 +15,7 @@ class Ai:
 
         """ If the card or number is the same as the current game card"""
         for item in range(len(bot_cards)):
-            if ((uno.discards[-1].color == bot_cards[item].color or bot_cards[item].color == "wild") or uno.discards[-1].number == bot_cards[item].number):
+            if ((uno.display_card.color == bot_cards[item].color or bot_cards[item].color == "wild") or uno.display_card.number == bot_cards[item].number):
                 print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
                 uno.placeCard(bot_cards, item) # Places Card from hand
                 uno.checkEffect(players, deck, uno) # Applies effects skip, plus, or reverse
