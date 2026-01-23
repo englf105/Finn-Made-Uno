@@ -3,26 +3,27 @@ import random
 from player import Player
 from player_ai import Ai
 import copy
+from deck import Deck
 
 class Game():
 
-    def __init__(self, deck):
+    def __init__(self):
+        self.deck = Deck()
         self.order_multiplier = 1
-        self.player_amount = 0
+        self.player_amount = 0 
         self.turn = 0
         self.discards = []
-        self.times_shuffled = 0
         self.display_card = ""
 
         print(f"\033[33m===== Welcome to Uno! =====\033[0m")    
-        self.setRandomCard(deck)
+        self.setRandomCard()
         self.checkPlayerAmount()   
 
-    def setRandomCard(self, deck):
-        self.discards.append(deck.getRandomCard())
+    def setRandomCard(self):
+        self.discards.append(self.deck.getRandomCard())
         forbidden_cards = ["skip", "reverse", "plus", "wild"]
         while (self.discards[-1].number not in forbidden_cards):
-            self.discards.append(deck.getRandomCard())
+            self.discards.append(self.deck.getRandomCard())
         self.display_card = copy.deepcopy(self.discards[-1])
 
     def checkPlayerAmount(self):
@@ -41,13 +42,13 @@ class Game():
         self.display_card = copy.deepcopy(cards[card_num])
         cards.pop(card_num) # Removing the card from hand
     
-    def checkEffect(self, players, deck, uno):
-        self.checkWild(players, deck, uno)
-        self.checkPlus(players, deck, uno)
+    def checkEffect(self, players, uno):
+        self.checkWild(players, uno)
+        self.checkPlus(players, uno)
         self.checkReverse()
         self.checkSkip()
         
-    def checkWild(self, players, deck, uno):
+    def checkWild(self, players, uno):
         if (self.discards[-1].color == "wild"):
             if isinstance(players[self.turn], Player):
                 color = input("Enter color you wish to change to (r/y/g/b): ")
@@ -65,17 +66,17 @@ class Game():
                 plus_turn = self.turn
                 plus_turn += self.order_multiplier
                 plus_turn = self.turnLimit(plus_turn, self.player_amount)
-                players[plus_turn].hand.drawCard(4, deck, uno)
+                players[plus_turn].hand.drawCard(4, uno)
                 print(f"\n===== {self.displayName(plus_turn, False)} drew four cards! =====")
             self.display_card.number = "<any>"
             print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
-    def checkPlus(self, players, deck, uno):
+    def checkPlus(self, players, uno):
         if (self.discards[-1].number == "plus"):
             plus_turn = self.turn
             plus_turn += self.order_multiplier
             plus_turn = self.turnLimit(plus_turn, self.player_amount)
-            players[plus_turn].hand.drawCard(2, deck, uno)
+            players[plus_turn].hand.drawCard(2, uno)
             print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
 
     def checkReverse(self):
@@ -110,10 +111,10 @@ class Game():
         self.turn += (1 * self.order_multiplier)
         self.turn = self.turnLimit(self.turn, self.player_amount)
 
-    def shuffleDeck(self, deck):
-        if not deck.deck:
+    def shuffleDeck(self):
+        if not self.deck:
             print("\n\033[34m===== A the deck has been shuffled! =====\033[0m")
-            deck.deck = self.discards[:-1] # Sets deck to cards in discards except most recent
+            self.deck = self.discards[:-1] # Sets deck to cards in discards except most recent
             self.discards = self.discards[-1:] # Removes all cards in discards except most recent
 
     def displayDiscards(self):

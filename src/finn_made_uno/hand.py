@@ -15,16 +15,16 @@ class Hand:
             rep = "<empty>"
         return rep
 
-    def drawCard(self, amount, deck, uno):
+    def drawCard(self, amount, uno):
         self.cards_needed = amount
         for i in range(amount):
-            if deck.deck:
-                new_card = random.choice(deck.deck)
-                deck.deck.remove(new_card)
+            if uno.deck.deck:
+                new_card = random.choice(uno.deck.deck)
+                uno.deck.deck.remove(new_card)
                 self.cards.append(new_card)
                 self.cards_needed -= 1
-        if not deck.deck:
-            uno.shuffleDeck(deck)
-            self.drawCard(self.cards_needed, deck, uno)
+        if not uno.deck.deck:
+            uno.shuffleDeck()
+            self.drawCard(self.cards_needed, uno)
 
             

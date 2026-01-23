@@ -13,12 +13,11 @@ from deck import Deck
 def main():
 
     # Game setup
-    deck = Deck()
-    uno = game.Game(deck)
+    uno = game.Game()
     players = []
-    players.append(Player(deck, uno)) # Adds player to first player slot
+    players.append(Player(uno)) # Adds player to first player slot
     for player in range(uno.player_amount):
-        players.append(Ai(deck, uno))
+        players.append(Ai(uno))
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
@@ -27,10 +26,10 @@ def main():
         uno.displayTurnInfo(players)
 
         if isinstance(players[uno.turn], Player): # During player's turn
-            Player.playerTurn(uno, players, deck)
+            Player.playerTurn(uno, players)
 
         elif isinstance(players[uno.turn], Ai): # During AI's turn
-            Ai.botTurn(uno, players, deck)
+            Ai.botTurn(uno, players)
 
         if least_cards > len(players[uno.turn].hand.cards):
             least_cards = len(players[uno.turn].hand.cards)
