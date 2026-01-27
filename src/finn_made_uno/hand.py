@@ -10,21 +10,24 @@ class Hand:
         if self.cards:
             rep = ""
             for card in (self.cards):
-                rep += str(card) + ", "
+                rep += f"({self.cards.index(card) + 1}) "
+                rep += str(card)
+                rep +=", "
         else:
             rep = "<empty>"
         return rep
 
     def drawCard(self, amount, uno):
-        self.cards_needed = amount
+        cards_needed = amount
+        deck = uno.deck.deck
         for i in range(amount):
-            if uno.deck.deck:
-                new_card = random.choice(uno.deck.deck)
-                uno.deck.deck.remove(new_card)
+            if deck:
+                new_card = random.choice(deck)
+                deck.remove(new_card)
                 self.cards.append(new_card)
-                self.cards_needed -= 1
-        if not uno.deck.deck:
+                cards_needed -= 1
+        if not deck:
             uno.shuffleDeck()
-            self.drawCard(self.cards_needed, uno)
+            self.drawCard(cards_needed, uno)
 
             

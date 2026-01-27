@@ -7,7 +7,6 @@ by: Finn English
 import game
 from player import Player
 from player_ai import Ai
-from deck import Deck
 
 
 def main():
@@ -16,20 +15,20 @@ def main():
     uno = game.Game()
     players = []
     players.append(Player(uno)) # Adds player to first player slot
-    for player in range(uno.player_amount):
+    for i in range(uno.player_amount):
         players.append(Ai(uno))
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
-    while (len(players[uno.turn].hand.cards) != 0):
+    while len(players[uno.turn].hand.cards) != 0:
 
         uno.displayTurnInfo(players)
 
         if isinstance(players[uno.turn], Player): # During player's turn
-            Player.playerTurn(uno, players)
+            players[uno.turn].playerTurn(uno, players)
 
         elif isinstance(players[uno.turn], Ai): # During AI's turn
-            Ai.botTurn(uno, players)
+            players[uno.turn].botTurn(uno, players)
 
         if least_cards > len(players[uno.turn].hand.cards):
             least_cards = len(players[uno.turn].hand.cards)
