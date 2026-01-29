@@ -13,7 +13,7 @@ class Ai:
         card_placed = False
         bot_cards = players[uno.turn].hand.cards
 
-        """ If the card or number is the same as the current game card"""
+        """ Searches for valid card to place in Ai's hand """
         for item in range(len(bot_cards)):
             if ((uno.display_card.color == bot_cards[item].color or 
                  bot_cards[item].color == "wild") or 
@@ -25,6 +25,7 @@ class Ai:
                 card_placed = True
                 break # Ends card search after card is placed
         
+        """ If no card in hand is placeable """
         if card_placed == False:
             print("\n\033[32m===== Drew a card! =====\033[0m")
             players[uno.turn].hand.drawCard(1, uno)

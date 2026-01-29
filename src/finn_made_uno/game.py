@@ -1,9 +1,9 @@
-from card import Card
-import random
+from deck import Deck
 from player import Player
 from player_ai import Ai
+from card import Card
+import random
 import copy
-from deck import Deck
 
 class Game():
 
@@ -20,17 +20,23 @@ class Game():
         self.checkPlayerAmount()   
 
     def setRandomCard(self):
+        forbidden_cards = ["skip", "reverse", "plus", "card", "plus_4"]
         self.discards.append(self.deck.getRandomCard())
-        forbidden_cards = ["skip", "reverse", "plus", "wild"]
-        while self.discards[-1].number not in forbidden_cards:
-            self.discards.append(self.deck.getRandomCard())
+        if self.discards[-1].number in forbidden_cards:
+            while self.discards[-1].number in forbidden_cards:
+                self.discards.append(self.deck.getRandomCard())
         self.display_card = copy.deepcopy(self.discards[-1])
 
     def checkPlayerAmount(self):
         while self.player_amount > 3 or self.player_amount < 1:
-            self.player_amount = int(input("Enter amount of players (2-4): ")) - 1
+            self.player_amount = int(input("Enter total amount of players (2-4): ")) - 1
             if self.player_amount > 3 or self.player_amount < 1:
                 print("\n///// Invalid  amount of players /////\n")
+
+    def addPlayers(self, players, uno):
+        players.append(Player(uno)) # Adds player to first player slot
+        for i in range(self.player_amount):
+            players.append(Ai(uno))
 
     def displayTurnInfo(self, players):
         print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
@@ -38,11 +44,15 @@ class Game():
         print(players[self.turn])
 
     def displayName(self, turn, possesive):
-        if turn == 0: 
-            if possesive: return "Your"
-            else: return "You"
-        else: 
-            return f"Player {turn + 1}"
+        if turn == 0 and possesive: return "Your"
+        elif turn == 0 and not possesive: return "You"
+        else: return f"Player {turn + 1}"
+
+    def playerTurn(self, players, uno):
+        if isinstance(players[self.turn], Player): # During player's turn
+            players[self.turn].playerTurn(uno, players)
+        elif isinstance(players[uno.turn], Ai): # During AI's turn
+            players[self.turn].botTurn(uno, players)
 
     def placeCard(self, cards, card_num):
         self.discards.append(cards[card_num]) # Putting card into discard pile
@@ -91,7 +101,7 @@ class Game():
 
     def checkSkip(self):
         if self.display_card.number == "skip":
-            self.turn += (self.order_multiplier)
+            self.turn += self.order_multiplier
             self.turn = self.turnLimit(self.turn, self.player_amount)
             print("\n===== A turn was skipped! =====") 
 
@@ -101,7 +111,7 @@ class Game():
         else: return turn # If no conditions apply
         
     def nextTurn(self):
-        self.turn += 1 * self.order_multiplier
+        self.turn += self.order_multiplier
         self.turn = self.turnLimit(self.turn, self.player_amount)
 
     def shuffleDeck(self):

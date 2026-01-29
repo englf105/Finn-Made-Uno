@@ -4,7 +4,7 @@ by: Finn English
 """
 
 
-import game
+from game import Game
 from player import Player
 from player_ai import Ai
 
@@ -12,30 +12,23 @@ from player_ai import Ai
 def main():
 
     # Game setup
-    uno = game.Game()
+    uno = Game()
     players = []
-    players.append(Player(uno)) # Adds player to first player slot
-    for i in range(uno.player_amount):
-        players.append(Ai(uno))
+    uno.addPlayers(players, uno)
     least_cards = len(players[uno.turn].hand.cards)
 
     # Game Loop
     while len(players[uno.turn].hand.cards) != 0:
 
         uno.displayTurnInfo(players)
-
-        if isinstance(players[uno.turn], Player): # During player's turn
-            players[uno.turn].playerTurn(uno, players)
-
-        elif isinstance(players[uno.turn], Ai): # During AI's turn
-            players[uno.turn].botTurn(uno, players)
+        
+        uno.playerTurn(players, uno)
 
         if least_cards > len(players[uno.turn].hand.cards):
             least_cards = len(players[uno.turn].hand.cards)
-        if least_cards == 0:
-            break
+        if least_cards == 0: break
 
-        uno.nextTurn() # Goes to next turn
+        uno.nextTurn()
 
     print(f"\n\033[34m===== Player {uno.turn + 1} won Uno! =====\033[0m\n")
                 

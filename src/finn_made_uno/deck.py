@@ -23,6 +23,7 @@ class Deck:
         return rep
 
     def getRandomCard(self):
+        """ Get a random card from the deck """
         new_card = random.choice(self.deck)
         self.deck.remove(new_card)
         return new_card

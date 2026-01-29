@@ -1,4 +1,3 @@
-from card import Card
 import random
 
 class Hand:

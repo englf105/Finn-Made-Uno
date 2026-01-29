@@ -20,7 +20,7 @@ class Player:
                 player_cards = players[0].hand.cards
                 if int(decision) >= 1 and int(decision) <= len(player_cards):
 
-                    """ If the card or number is the same as the current game card"""
+                    """ If the card or number is the same as the current game card """
                     if ((uno.display_card.color == player_cards[card_num].color or 
                         player_cards[card_num].color == "wild") or 
                         uno.display_card.number == player_cards[card_num].number):
@@ -30,11 +30,15 @@ class Player:
                         uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
                         break
                     else:
-                        print("\n///// Invalid Card Selected /////")
+                        print("\n///// Cannot play card. /////")
                 else:
-                    print("\n///// Invalid Card Selected /////")
+                    print("\n///// Card selected nonexistant. /////")
 
-            if decision == "D" or decision == "d":
+            elif decision == "D" or decision == "d":
                 print("\n\033[32m===== Drew a card! =====\033[0m")
                 players[0].hand.drawCard(1, uno)
                 break
+
+            else:
+                print("\n///// Select a card by entering it's number or" +
+                " enter d to draw a card. /////")

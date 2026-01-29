@@ -1,4 +1,3 @@
-import random
 
 class Card:
 
@@ -14,9 +13,3 @@ class Card:
     def __str__(self):
         rep = self.color + "_" + self.number
         return rep
-
-    # Getting a random card from the deck
-    def randomCard():
-        random_color = random.choice(Card.color)
-        random_num = random.choice(Card.number)
-        return Card(random_color, random_num)
