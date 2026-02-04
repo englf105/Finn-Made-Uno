@@ -6,8 +6,8 @@ class Player:
         self.hand = hand.Hand() # Creating the player's hand
         self.hand.drawCard(7, uno) # Starting amount of cards
 
-    def __str__(self):
-        return f"Cards in hand: {self.hand}"
+    def displayHand(self, display_card):
+        return f"Cards in hand: {self.hand.displayHand(display_card, True)}"
     
     def playerTurn(self, uno, players):
         while True:

@@ -28,10 +28,11 @@ class Game():
         self.display_card = copy.deepcopy(self.discards[-1])
 
     def checkPlayerAmount(self):
-        while self.player_amount > 3 or self.player_amount < 1:
-            self.player_amount = int(input("Enter total amount of players (2-4): ")) - 1
-            if self.player_amount > 3 or self.player_amount < 1:
+        while self.player_amount > 5 or self.player_amount < 1:
+            self.player_amount = int(input("Enter total amount of players (2-6): ")) - 1
+            if self.player_amount > 5 or self.player_amount < 1:
                 print("\n///// Invalid  amount of players /////\n")
+
 
     def addPlayers(self, players, uno):
         players.append(Player(uno)) # Adds player to first player slot
@@ -41,7 +42,7 @@ class Game():
     def displayTurnInfo(self, players):
         print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
         print(f"Current card: {self.display_card}")
-        print(players[self.turn])
+        print(players[self.turn].displayHand(self.display_card))
 
     def displayName(self, turn, possesive):
         if turn == 0 and possesive: return "Your"
@@ -115,7 +116,7 @@ class Game():
         self.turn = self.turnLimit(self.turn, self.player_amount)
 
     def shuffleDeck(self):
-        if not self.deck:
+        if not self.deck.deck:
             print("\n\033[34m===== A the deck has been shuffled! =====\033[0m")
-            self.deck = self.discards[:-1] # Sets deck to cards in discards except most recent
+            self.deck.deck = self.discards[:-1] # Sets deck to cards in discards except most recent
             self.discards = self.discards[-1:] # Removes all cards in discards except most recent

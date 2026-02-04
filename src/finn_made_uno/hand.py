@@ -5,15 +5,17 @@ class Hand:
     def __init__(self):
         self.cards = []
 
-    def __str__(self):
+    def displayHand(self, display_card, player):
         if self.cards:
             rep = ""
             for card in (self.cards):
+                if (((display_card.color == card.color or 
+                      card.color == "wild") or 
+                     display_card.number == card.number) and player):
+                    rep += "\033[33m"
                 rep += f"({self.cards.index(card) + 1}) "
-                rep += str(card)
-                rep +=", "
-        else:
-            rep = "<empty>"
+                rep += str(card) + "\033[0m, "
+        else: rep = "<empty>"
         return rep
 
     def drawCard(self, amount, uno):

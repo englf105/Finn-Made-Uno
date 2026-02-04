@@ -6,8 +6,8 @@ class Ai:
         self.hand = hand.Hand() # Creating the player's hand
         self.hand.drawCard(7, uno) # Starting amount of cards
 
-    def __str__(self):
-        return f"Ai's Hand: {self.hand}"
+    def displayHand(self, display_card):
+        return f"Ai's hand: {self.hand.displayHand(display_card, False)}"
     
     def botTurn(self, uno, players):
         card_placed = False
@@ -18,7 +18,6 @@ class Ai:
             if ((uno.display_card.color == bot_cards[item].color or 
                  bot_cards[item].color == "wild") or 
                  uno.display_card.number == bot_cards[item].number):
-                
                 print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
                 uno.placeCard(bot_cards, item) # Places Card from hand
                 uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
