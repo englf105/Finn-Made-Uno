@@ -1,9 +1,9 @@
 [project]
 name = "finn-made-uno"
-version = "0.1.1"
+version = "0.1.2"
 description = "Little Uno Game to play when bored"
 authors = [
-    {name = "Finn English", email = "englf105@hsd.k12.or.us"}
+    {name = "Finn English", email = "Fenglish07@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.13"
