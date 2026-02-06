@@ -84,6 +84,8 @@ class Game():
                 plus_turn = self.turnLimit(plus_turn, self.player_amount)
                 players[plus_turn].hand.drawCard(4, uno)
                 print(f"\n===== {self.displayName(plus_turn, False)} drew four cards! =====")
+                self.turn += self.order_multiplier
+                self.turn = self.turnLimit(self.turn, self.player_amount)
             self.display_card.number = "<any>"
             print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
@@ -93,6 +95,8 @@ class Game():
             plus_turn = self.turnLimit(plus_turn, self.player_amount)
             players[plus_turn].hand.drawCard(2, uno)
             print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
+            self.turn += self.order_multiplier
+            self.turn = self.turnLimit(self.turn, self.player_amount)
 
     def checkReverse(self):
         if self.display_card.number == "reverse":
