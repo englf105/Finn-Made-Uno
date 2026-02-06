@@ -33,7 +33,6 @@ class Game():
             if self.player_amount > 5 or self.player_amount < 1:
                 print("\n///// Invalid  amount of players /////\n")
 
-
     def addPlayers(self, players, uno):
         players.append(Player(uno)) # Adds player to first player slot
         for i in range(self.player_amount):
