@@ -5,6 +5,7 @@ from card import Card
 import random
 import copy
 
+
 class Game():
 
     def __init__(self):
