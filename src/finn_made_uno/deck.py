@@ -28,7 +28,4 @@ class Deck:
         new_card = random.choice(self.deck)
         self.deck.remove(new_card)
         return new_card
-
-if __name__ == "__main__":
-    deck = Deck()
-    print(deck)
+    

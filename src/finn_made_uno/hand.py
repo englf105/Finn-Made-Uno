@@ -1,4 +1,5 @@
 import random
+from card import Card
 
 
 class Hand:
@@ -7,6 +8,7 @@ class Hand:
         self.cards = []
 
     def displayHand(self, display_card, player):
+        self.cards.sort(key=lambda s: (Card.color.index(s.color), s.number))
         if self.cards:
             rep = ""
             for card in (self.cards):
@@ -29,7 +31,11 @@ class Hand:
                 self.cards.append(new_card)
                 cards_needed -= 1
         if not deck:
-            uno.shuffleDeck()
-            self.drawCard(cards_needed, uno)
+            if len(uno.discards) > 1:
+                uno.shuffleDeck()
+                self.drawCard(cards_needed, uno)
+            else:
+                print("\n\033[34m===== There are no cards " + 
+                      "left in the deck! =====\033[0m")
 
             
