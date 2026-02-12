@@ -101,8 +101,14 @@ class Game():
 
     def checkReverse(self):
         if self.display_card.number == "reverse":
-            self.order_multiplier = self.order_multiplier * -1
-            print("\n===== The turns are reversed! =====")
+            if self.player_amount > 1:
+                self.order_multiplier = self.order_multiplier * -1
+                print("\n===== The turns are reversed! =====")
+            else: 
+                print(f"\n===== The turn goes back to {self.displayName(self.turn, False)}! =====")
+                self.turn += self.order_multiplier
+                self.turn = self.turnLimit(self.turn, self.player_amount)
+
 
     def checkSkip(self):
         if self.display_card.number == "skip":
