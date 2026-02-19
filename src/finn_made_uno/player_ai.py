@@ -15,11 +15,9 @@ class Ai:
         bot_cards = players[uno.turn].hand.cards
 
         """ Searches for valid card to place in Ai's hand """
-        for item in range(len(bot_cards)):
-            if ((uno.display_card.color == bot_cards[item].color or 
-                 bot_cards[item].color == "wild") or 
-                 uno.display_card.number == bot_cards[item].number):
-                print(f"\n\033[32m===== A {bot_cards[item]} was placed! =====\033[0m")
+        for item in bot_cards:
+            if uno.validCard(item):
+                print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
                 uno.placeCard(bot_cards, item) # Places Card from hand
                 uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
                 card_placed = True
@@ -27,5 +25,9 @@ class Ai:
         
         """ If no card in hand is placeable """
         if card_placed == False:
-            print("\n\033[32m===== Drew a card! =====\033[0m")
+            print(f"\n\033[32m===== {uno.displayName(uno.turn, False)} drew a card! =====\033[0m")
             players[uno.turn].hand.drawCard(1, uno)
+            if uno.draw_till_place == True:
+                self.botTurn(uno, players)
+
+        

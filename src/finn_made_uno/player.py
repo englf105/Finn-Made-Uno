@@ -12,22 +12,21 @@ class Player:
     
     def playerTurn(self, uno, players):
         while True:
-            decision = input("\n=== Options ===" +
-                            "\n-Draw (d)" + 
-                             f"\n-Play a card (1-{len(self.hand.cards)})" +
-                             "\n\nEnter decision here: ")
+            decision = input(
+                "\n=== Options ===" +
+                "\n-Draw (d)" + 
+                f"\n-Play a card (1-{len(self.hand.cards)})" +
+                "\n\nEnter decision here: "
+                )
             if decision.isdigit():
                 card_num = int(decision)-1
                 player_cards = players[0].hand.cards
                 if int(decision) >= 1 and int(decision) <= len(player_cards):
 
                     """ If the card or number is the same as the current game card """
-                    if ((uno.display_card.color == player_cards[card_num].color or 
-                        player_cards[card_num].color == "wild") or 
-                        uno.display_card.number == player_cards[card_num].number):
-
+                    if (uno.validCard(player_cards[card_num])):
                         print(f"\n\033[32m===== A {player_cards[card_num]} was placed! =====\033[0m")
-                        uno.placeCard(player_cards, card_num) # Places Card from hand
+                        uno.placeCard(player_cards, player_cards[card_num]) # Places Card from hand
                         uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
                         break
                     else:
@@ -36,9 +35,18 @@ class Player:
                     print("\n///// Card selected nonexistant. /////")
 
             elif decision == "D" or decision == "d":
-                print("\n\033[32m===== Drew a card! =====\033[0m")
+                print(f"\n\033[32m===== {uno.displayName(uno.turn, False)} drew a card! =====\033[0m")
                 players[0].hand.drawCard(1, uno)
-                break
+
+                """ Game Rules """
+                if uno.draw_till_place == False: break
+
+                elif uno.place_after_draw:
+                     for item in range(self.hand.cards):
+                        if uno.validCard(item):
+                            break
+
+                else: uno.displayTurnInfo(players)
 
             else:
                 print("\n///// Select a card by entering it's number or" +

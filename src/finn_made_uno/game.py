@@ -15,6 +15,10 @@ class Game():
         self.turn = 0
         self.discards = []
         self.display_card = ""
+        """ Settings """
+        self.place_after_draw = False
+        self.draw_till_place = False
+        self.stack_plus_cards = False
 
         print(f"\033[33m===== Welcome to Uno! =====\033[0m")    
         self.setRandomCard()
@@ -55,10 +59,10 @@ class Game():
         elif isinstance(players[uno.turn], Ai): # During AI's turn
             players[self.turn].botTurn(uno, players)
 
-    def placeCard(self, cards, card_num):
-        self.discards.append(cards[card_num]) # Putting card into discard pile
-        self.display_card = copy.deepcopy(cards[card_num])
-        cards.pop(card_num) # Removing the card from hand
+    def placeCard(self, cards, card):
+        self.discards.append(card) # Putting card into discard pile
+        self.display_card = copy.deepcopy(card)
+        cards.remove(card) # Removing the card from hand
     
     def checkEffect(self, players, uno):
         self.checkWild(players, uno)
@@ -69,7 +73,10 @@ class Game():
     def checkWild(self, players, uno):
         if self.display_card.color == "wild":
             if isinstance(players[self.turn], Player):
-                color = input("Enter color you wish to change to (r/y/g/b): ")
+                color = ""
+                colors = ["r", "y", "g", "b"]
+                while color not in colors:
+                    color = input("Enter color you wish to change to (r/y/g/b): ")
                 for item in Card.color:
                     if color == item[0]:
                         self.display_card.color = item
@@ -109,7 +116,6 @@ class Game():
                 self.turn += self.order_multiplier
                 self.turn = self.turnLimit(self.turn, self.player_amount)
 
-
     def checkSkip(self):
         if self.display_card.number == "skip":
             self.turn += self.order_multiplier
@@ -130,3 +136,10 @@ class Game():
             print("\n\033[34m===== A the deck has been shuffled! =====\033[0m")
             self.deck.deck = self.discards[:-1] # Sets deck to cards in discards except most recent
             self.discards = self.discards[-1:] # Removes all cards in discards except most recent
+        
+    def validCard(self, card):
+        same_color = self.display_card.color == card.color 
+        same_number = self.display_card.number == card.number
+        is_wild = card.color == "wild"
+        if same_color or same_number or is_wild:
+            return True

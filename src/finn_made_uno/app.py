@@ -41,14 +41,14 @@ class MainWindow(QWidget):
     
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
-        dlg = SettingsDialog(self)
+        dlg = SettingsWindow(self)
         # Use exec() to run the dialog modally (blocks input to other windows)
         if dlg.exec() == QDialog.DialogCode.Accepted:
             print("Settings saved/accepted")
         else:
             print("Settings canceled/closed")
 
-class SettingsDialog(QDialog):
+class SettingsWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
