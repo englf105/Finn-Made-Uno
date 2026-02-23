@@ -16,7 +16,7 @@ def main():
     least_cards = len(players[uno.turn].hand.cards)
 
     """ Settings """
-    uno.place_after_draw = True
+    uno.place_after_draw = False
     uno.draw_till_place = False
     uno.stack_plus_cards = False
 

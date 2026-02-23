@@ -39,7 +39,7 @@ class Player:
                 players[0].hand.drawCard(1, uno)
 
                 """ Game Rules """
-                if uno.draw_till_place == False: break
+                if not uno.draw_till_place: break
 
                 elif uno.place_after_draw:
                      for item in range(self.hand.cards):

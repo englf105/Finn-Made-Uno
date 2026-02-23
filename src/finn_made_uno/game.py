@@ -86,7 +86,7 @@ class Game():
                         self.display_card.color = card.color
                         break
                 if self.display_card.color == "wild":
-                        self.display_card.color = random.choice(Card.color)
+                    self.display_card.color = random.choice(Card.color[:4])
             if self.display_card.number == "plus_4":
                 plus_turn = self.turn + self.order_multiplier
                 plus_turn = self.turnLimit(plus_turn, self.player_amount)
@@ -99,10 +99,27 @@ class Game():
 
     def checkPlus(self, players, uno):
         if self.display_card.number == "plus":
+            player_cards = players[self.turn].hand.cards
             plus_turn = self.turn + self.order_multiplier
             plus_turn = self.turnLimit(plus_turn, self.player_amount)
-            players[plus_turn].hand.drawCard(2, uno)
-            print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
+            if self.stack_plus_cards:
+                """ Check to see if the next player has a plus card """
+                has_plus = False
+                for item in players[plus_turn].hand.cards:
+                    if item.color == "plus":
+                        has_plus = True
+
+                if has_plus and player_cards:
+                    """ If they do have a plus card"""
+                    
+                        
+                else: 
+                    """ If they do not have a plus card """
+                    players[plus_turn].hand.drawCard(2, uno)
+                    print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
+            else:
+                players[plus_turn].hand.drawCard(2, uno)
+                print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
             self.turn += self.order_multiplier
             self.turn = self.turnLimit(self.turn, self.player_amount)
 

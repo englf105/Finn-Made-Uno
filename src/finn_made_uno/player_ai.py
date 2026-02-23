@@ -24,7 +24,7 @@ class Ai:
                 break # Ends card search after card is placed
         
         """ If no card in hand is placeable """
-        if card_placed == False:
+        if not card_placed:
             print(f"\n\033[32m===== {uno.displayName(uno.turn, False)} drew a card! =====\033[0m")
             players[uno.turn].hand.drawCard(1, uno)
             if uno.draw_till_place == True:
