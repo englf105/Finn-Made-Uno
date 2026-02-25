@@ -39,14 +39,20 @@ class Player:
                 players[0].hand.drawCard(1, uno)
 
                 """ Game Rules """
-                if not uno.draw_till_place: break
-
-                elif uno.place_after_draw:
-                     for item in range(self.hand.cards):
+                if uno.place_after_draw:
+                    can_place = False
+                    for item in self.hand.cards:
                         if uno.validCard(item):
+                            can_place = True
+                            print("\n===== Drawn card can be placed! =====")
                             break
+                    if not can_place:
+                        break
 
-                else: uno.displayTurnInfo(players)
+                if not uno.draw_till_place and not uno.place_after_draw: 
+                    break
+
+                uno.displayTurnInfo(players)
 
             else:
                 print("\n///// Select a card by entering it's number or" +

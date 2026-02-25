@@ -15,6 +15,7 @@ class Game():
         self.turn = 0
         self.discards = []
         self.display_card = ""
+        self.plus_amount = 0
         """ Settings """
         self.place_after_draw = False
         self.draw_till_place = False
@@ -39,7 +40,7 @@ class Game():
                 print("\n///// Invalid  amount of players /////\n")
 
     def addPlayers(self, players, uno):
-        players.append(Player(uno)) # Adds player to first player slot
+        players.append(Ai(uno)) # Adds player to first player slot
         for i in range(self.player_amount):
             players.append(Ai(uno))
 
@@ -99,27 +100,17 @@ class Game():
 
     def checkPlus(self, players, uno):
         if self.display_card.number == "plus":
-            player_cards = players[self.turn].hand.cards
-            plus_turn = self.turn + self.order_multiplier
-            plus_turn = self.turnLimit(plus_turn, self.player_amount)
-            if self.stack_plus_cards:
-                """ Check to see if the next player has a plus card """
-                has_plus = False
-                for item in players[plus_turn].hand.cards:
-                    if item.color == "plus":
-                        has_plus = True
+            self.plus_amount = 2
+            
+            # Find next player to add cards to
+            next_turn = self.turn + self.order_multiplier
+            next_turn = self.turnLimit(next_turn, self.player_amount)     
 
-                if has_plus and player_cards:
-                    """ If they do have a plus card"""
-                    
-                        
-                else: 
-                    """ If they do not have a plus card """
-                    players[plus_turn].hand.drawCard(2, uno)
-                    print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
-            else:
-                players[plus_turn].hand.drawCard(2, uno)
-                print(f"\n===== {self.displayName(plus_turn, False)} drew two cards! =====")
+            # Give them plus 2 cards
+            players[next_turn].hand.drawCard(self.plus_amount, uno)
+            print(f"\n===== {self.displayName(next_turn, False)} drew two cards! =====")
+
+            # Go to next turn
             self.turn += self.order_multiplier
             self.turn = self.turnLimit(self.turn, self.player_amount)
 
@@ -160,3 +151,5 @@ class Game():
         is_wild = card.color == "wild"
         if same_color or same_number or is_wild:
             return True
+        else: 
+            return False
