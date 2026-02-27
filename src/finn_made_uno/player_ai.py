@@ -15,13 +15,23 @@ class Ai:
         bot_cards = players[uno.turn].hand.cards
 
         """ Searches for valid card to place in Ai's hand """
-        for item in bot_cards:
-            if uno.validCard(item):
-                print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
-                uno.placeCard(bot_cards, item) # Places Card from hand
-                uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
-                card_placed = True
-                break # Ends card search after card is placed
+        if uno.stack_plus_cards:
+            for item in bot_cards:
+                if item.number == "plus":
+                    print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
+                    uno.placeCard(bot_cards, item) # Places Card from hand
+                    uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
+                    card_placed = True
+                    break # Ends card search after card is placed
+            
+        if not card_placed:
+            for item in bot_cards:
+                if uno.validCard(item):
+                    print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
+                    uno.placeCard(bot_cards, item) # Places Card from hand
+                    uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
+                    card_placed = True
+                    break # Ends card search after card is placed
         
         """ If no card in hand is placeable """
         if not card_placed:

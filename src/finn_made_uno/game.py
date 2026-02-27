@@ -2,6 +2,7 @@ from deck import Deck
 from player import Player
 from player_ai import Ai
 from card import Card
+import num2words
 import random
 import copy
 
@@ -15,7 +16,7 @@ class Game():
         self.turn = 0
         self.discards = []
         self.display_card = ""
-        self.plus_amount = 0
+        self.stack = 0
         """ Settings """
         self.place_after_draw = False
         self.draw_till_place = False
@@ -43,6 +44,12 @@ class Game():
         players.append(Ai(uno)) # Adds player to first player slot
         for i in range(self.player_amount):
             players.append(Ai(uno))
+
+    def checkPlayerCards(self, players):
+        for player in players:
+            if len(player.hand.cards) == 0:
+                return False # Stops if player has no cards
+        return True # Keeps game going if all players have cards
 
     def displayTurnInfo(self, players):
         print(f"\n\033[33m===== {self.displayName(self.turn, True)} turn =====\033[0m")
@@ -100,19 +107,29 @@ class Game():
 
     def checkPlus(self, players, uno):
         if self.display_card.number == "plus":
-            self.plus_amount = 2
-            
+
             # Find next player to add cards to
             next_turn = self.turn + self.order_multiplier
             next_turn = self.turnLimit(next_turn, self.player_amount)     
 
-            # Give them plus 2 cards
-            players[next_turn].hand.drawCard(self.plus_amount, uno)
-            print(f"\n===== {self.displayName(next_turn, False)} drew two cards! =====")
+            # Searches player hand to see if they have a plus
+            for card in players[next_turn].hand.cards:
+                if card.number == "plus":
+                    self.stack += 1
+
+            # Give them the amount of cards needed
+            if self.stack == 0:
+                players[next_turn].hand.drawCard(2, uno)
+                print(f"\n===== {self.displayName(next_turn, False)} drew two cards! =====")
 
             # Go to next turn
             self.turn += self.order_multiplier
             self.turn = self.turnLimit(self.turn, self.player_amount)
+        
+        # If the plus stack is greater than 0 and no plus card is placed
+        elif self.stack > 0:
+                players[next_turn].hand.drawCard(self.stack * 2, uno)
+                print(f"\n===== {self.displayName(next_turn, False)} drew {num2words(self.stack * 2)} cards! =====")
 
     def checkReverse(self):
         if self.display_card.number == "reverse":
@@ -149,7 +166,11 @@ class Game():
         same_color = self.display_card.color == card.color 
         same_number = self.display_card.number == card.number
         is_wild = card.color == "wild"
-        if same_color or same_number or is_wild:
-            return True
-        else: 
-            return False
+        if same_color or same_number or is_wild: return True
+        else: return False
+    
+    def winnerName(self, players):
+        for player in players:
+            if len(player.hand.cards) == 0:
+                winner = players.index(player) + 1
+                return f"\n\033[34m===== Player {winner} won Uno! =====\033[0m\n"

@@ -9,24 +9,24 @@ from game import Game
 
 def main():
 
-    """ Game setup """
+    """ Game Setup """
     uno = Game()
     players = []
     uno.addPlayers(players, uno)
-    least_cards = len(players[uno.turn].hand.cards)
 
     """ Settings """
     uno.place_after_draw = False
     uno.draw_till_place = False
-    uno.stack_plus_cards = False
+    uno.stack_plus_cards = True
 
     """ Game Loop """
-    while any(player.hand.cards for player in players):
+    while uno.checkPlayerCards(players):
         uno.displayTurnInfo(players)
         uno.playerTurn(players, uno)
         uno.nextTurn()
-
-    print(f"\n\033[34m===== Player {uno.turn + 1} won Uno! =====\033[0m\n")
+    
+    """ Game Loop Ends """
+    print(uno.winnerName(players))
                 
                 
 if __name__ == "__main__":
