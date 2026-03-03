@@ -20,7 +20,7 @@ class Ai:
                 if item.number == "plus":
                     print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
                     uno.placeCard(bot_cards, item) # Places Card from hand
-                    uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
+                    uno.checkEffect() # Applies effects skip, plus, or reverse
                     card_placed = True
                     break # Ends card search after card is placed
             
@@ -29,7 +29,7 @@ class Ai:
                 if uno.validCard(item):
                     print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
                     uno.placeCard(bot_cards, item) # Places Card from hand
-                    uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
+                    uno.checkEffect() # Applies effects skip, plus, or reverse
                     card_placed = True
                     break # Ends card search after card is placed
         
@@ -37,7 +37,14 @@ class Ai:
         if not card_placed:
             print(f"\n\033[32m===== {uno.displayName(uno.turn, False)} drew a card! =====\033[0m")
             players[uno.turn].hand.drawCard(1, uno)
-            if uno.draw_till_place == True:
+            if uno.draw_till_place:
                 self.botTurn(uno, players)
+            elif uno.place_after_draw and not uno.draw_till_place:
+                can_place = False
+                for item in self.hand.cards:
+                    if uno.validCard(item):
+                        can_place = True
+                if can_place:
+                    self.botTurn(uno, players)
 
         

@@ -13,10 +13,10 @@ class Player:
     def playerTurn(self, uno, players):
         while True:
             decision = input(
-                "\n=== Options ===" +
-                "\n-Draw (d)" + 
+                 "\n=== Options ===" +
+                 "\n-Draw (d)" + 
                 f"\n-Play a card (1-{len(self.hand.cards)})" +
-                "\n\nEnter decision here: "
+                 "\n\nEnter decision here: "
                 )
             if decision.isdigit():
                 card_num = int(decision)-1
@@ -27,12 +27,11 @@ class Player:
                     if (uno.validCard(player_cards[card_num])):
                         print(f"\n\033[32m===== A {player_cards[card_num]} was placed! =====\033[0m")
                         uno.placeCard(player_cards, player_cards[card_num]) # Places Card from hand
-                        uno.checkEffect(players, uno) # Applies effects skip, plus, or reverse
+                        uno.checkEffect() # Applies effects skip, plus, or reverse
                         break
-                    else:
-                        print("\n///// Cannot play card. /////")
-                else:
-                    print("\n///// Card selected nonexistant. /////")
+                    
+                    else: print("\n///// Cannot play card. /////")
+                else: print("\n///// Card selected nonexistant. /////")
 
             elif decision == "D" or decision == "d":
                 print(f"\n\033[32m===== {uno.displayName(uno.turn, False)} drew a card! =====\033[0m")
@@ -52,7 +51,7 @@ class Player:
                 if not uno.draw_till_place and not uno.place_after_draw: 
                     break
 
-                uno.displayTurnInfo(players)
+                uno.displayTurnInfo()
 
             else:
                 print("\n///// Select a card by entering it's number or" +

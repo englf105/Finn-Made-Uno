@@ -11,22 +11,20 @@ def main():
 
     """ Game Setup """
     uno = Game()
-    players = []
-    uno.addPlayers(players, uno)
 
     """ Settings """
-    uno.place_after_draw = False
-    uno.draw_till_place = False
-    uno.stack_plus_cards = True
+    uno.place_after_draw = False # Working
+    uno.draw_till_place = False # Working
+    uno.stack_plus_cards = False # In progress
 
     """ Game Loop """
-    while uno.checkPlayerCards(players):
-        uno.displayTurnInfo(players)
-        uno.playerTurn(players, uno)
+    while uno.playerHasCards():
+        uno.displayTurnInfo()
+        uno.playerTurn()
         uno.nextTurn()
     
     """ Game Loop Ends """
-    print(uno.winnerName(players))
+    print(uno.winnerMessage())
                 
                 
 if __name__ == "__main__":
