@@ -16,13 +16,14 @@ class Ai:
 
         """ Searches for valid card to place in Ai's hand """
         if uno.stack_plus_cards:
-            for item in bot_cards:
-                if item.number == "plus":
-                    print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
-                    uno.placeCard(bot_cards, item) # Places Card from hand
-                    uno.checkEffect() # Applies effects skip, plus, or reverse
-                    card_placed = True
-                    break # Ends card search after card is placed
+            if uno.stack > 1:
+                for item in bot_cards:
+                    if item.number == "plus" or item.number == "plus_4":
+                        print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
+                        uno.placeCard(bot_cards, item) # Places Card from hand
+                        uno.checkEffect() # Applies effects skip, plus, or reverse
+                        card_placed = True
+                        break # Ends card search after card is placed
             
         if not card_placed:
             for item in bot_cards:

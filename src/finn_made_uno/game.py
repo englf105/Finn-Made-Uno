@@ -17,7 +17,8 @@ class Game():
         self.turn = 0
         self.discards = []
         self.display_card = ""
-        self.stack = 0
+        self.stack = 1
+        self.stack_change = self.stack
 
         """ Settings """
         self.place_after_draw = False
@@ -95,17 +96,12 @@ class Game():
                         break
                 if self.display_card.color == "wild":
                     self.display_card.color = random.choice(Card.color[:4])
-            if self.display_card.number == "plus_4":
-                plus_turn = self.turn + self.order_multiplier
-                plus_turn = self.turnLimit(plus_turn, self.player_amount)
-                self.players[plus_turn].hand.drawCard(4, self)
-                print(f"\n===== {self.displayName(plus_turn, False)} drew four cards! =====")
-                self.nextTurn()
             self.display_card.number = "<any>"
             print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
     def checkPlus(self):
-        if self.display_card.number == "plus":
+        # If the card placed was a plus card
+        if self.display_card.number == "plus" or self.display_card.number == "plus_4":
 
             # Find next player to add cards to
             next_turn = self.turn + self.order_multiplier
@@ -113,26 +109,32 @@ class Game():
 
             # Searches next player hand to see if they have a plus
             if self.stack_plus_cards:
-                for card in self.players[next_turn].hand.cards:
-                    if card.number == "plus":
-                        self.stack += 1
+                if self.display_card.number == "plus":
+                    for card in self.players[next_turn].hand.cards:
+                        if card.number == "plus":
+                            self.stack += 1
+                            break
+                        if card.number == "plus_4":
+                            self.stack += 2
+                            break
+                elif self.display_card.number == "plus_4":
+                    for card in self.players[next_turn].hand.cards:
+                        if card.number == "plus_4":
+                            self.stack += 2
+                            break
 
-            # Give them the amount of cards needed
-            if self.stack == 0:
-                self.players[next_turn].hand.drawCard(2, self)
-                print(f"\n===== {self.displayName(next_turn, False)} drew two cards! =====")
+            # If they have a plus
+            if self.stack > self.stack_change:
+                self.stack_change = self.stack
+            else:
+                # Give them the amount of cards needed
+                self.players[next_turn].hand.drawCard(self.stack * 2, self)
+                print(f"\n===== {self.displayName(next_turn, False)} drew {num2words(self.stack * 2)} cards! =====")
+                self.stack = 1
+                self.stack_change = self.stack
 
-            # Go to next turn
-            self.turn += self.order_multiplier
-            self.turn = self.turnLimit(self.turn, self.player_amount)
-        
-        # If the plus stack is greater than 0 and no plus card is placed
-        elif self.stack > 0:  
-
-                # Give the current player that many cards
-                self.players[self.turn].hand.drawCard(self.stack * 2, self)
-                print(f"\n===== {self.displayName(self.turn, False)} drew {num2words(self.stack * 2)} cards! =====")
-                self.stack = 0
+                # Go to next turn
+                self.nextTurn()
 
     def checkReverse(self):
         if self.display_card.number == "reverse":

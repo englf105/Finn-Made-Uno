@@ -15,7 +15,7 @@ def main():
     """ Settings """
     uno.place_after_draw = False # Working
     uno.draw_till_place = False # Working
-    uno.stack_plus_cards = False # In progress
+    uno.stack_plus_cards = True # In progress
 
     """ Game Loop """
     while uno.playerHasCards():
