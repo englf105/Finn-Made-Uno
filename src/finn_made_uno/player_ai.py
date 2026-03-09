@@ -16,9 +16,9 @@ class Ai:
 
         """ Searches for valid card to place in Ai's hand """
         if uno.stack_plus_cards:
-            if uno.stack > 1:
+            if uno.stack > 2:
                 for item in bot_cards:
-                    if item.number == "plus" or item.number == "plus_4":
+                    if (item.number == "plus" and uno.discards[-1] != "plus_4") or item.number == "plus_4":
                         print(f"\n\033[32m===== A {item} was placed! =====\033[0m")
                         uno.placeCard(bot_cards, item) # Places Card from hand
                         uno.checkEffect() # Applies effects skip, plus, or reverse
