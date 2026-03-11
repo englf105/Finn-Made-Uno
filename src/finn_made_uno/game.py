@@ -134,7 +134,6 @@ class Game():
             else:
                 # Give them the amount of cards needed
                 self.players[next_turn].hand.drawCard(self.stack, self)
-
                 print(f"\n===== {self.displayName(next_turn, False)} drew {num2words(self.stack)} cards! =====")
                 self.stack = 2
                 self.stack_change = self.stack

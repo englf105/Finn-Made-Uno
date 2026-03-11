@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QPixmap, QPainter
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -20,12 +20,12 @@ class MainWindow(QWidget):
         self.setWindowTitle("Finn Made Uno")
         self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
-        
+
         # Create layout
         layout = QGridLayout()
         self.setLayout(layout)
 
-        # Create header
+        # Create title
         self.title = QLabel("Finn Made Uno")
 
         # Create settings button
@@ -36,9 +36,9 @@ class MainWindow(QWidget):
         self.settings_button.clicked.connect(self.open_settings)
 
         # Add widgets
-        layout.addWidget(self.title, 2, 2)
-        layout.addWidget(self.settings_button, 4, 4)
-    
+        layout.addWidget(self.title)
+        layout.addWidget(self.settings_button)
+
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
         dlg = SettingsWindow(self)
