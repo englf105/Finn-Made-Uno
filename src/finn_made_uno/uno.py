@@ -7,25 +7,27 @@ by: Finn English
 from game import Game
 
 
-def main():
+class Uno():
 
-    """ Game Setup """
-    uno = Game()
+    def __init__(self):
 
-    """ Settings """
-    uno.place_after_draw = False # Working
-    uno.draw_till_place = False # Working
-    uno.stack_plus_cards = False # Working
+        """ Game Setup """
+        uno = Game()
 
-    """ Game Loop """
-    while uno.playerHasCards():
-        uno.displayTurnInfo()
-        uno.playerTurn()
-        uno.nextTurn()
-    
-    """ Game Loop Ends """
-    print(uno.winnerMessage())
+        """ Settings """
+        uno.place_after_draw = False # Working
+        uno.draw_till_place = False # Working
+        uno.stack_plus_cards = False # Working
+
+        """ Game Loop """
+        while uno.playerHasCards():
+            uno.displayTurnInfo()
+            uno.playerTurn()
+            uno.nextTurn()
+        
+        """ Game Loop Ends """
+        print(uno.winnerMessage())
                 
                 
 if __name__ == "__main__":
-    main()
+    uno = Uno()

@@ -37,5 +37,3 @@ class Hand:
             else:
                 print("\n\033[34m===== There are no cards " + 
                       "left in the deck! =====\033[0m")
-
-            

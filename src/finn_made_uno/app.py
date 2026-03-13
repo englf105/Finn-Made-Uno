@@ -10,34 +10,54 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QDialog,
     QCheckBox,
+    QMainWindow,
+    QStackedWidget,
 )
 
-class MainWindow(QWidget):
+
+from uno import Uno
+
+
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        # Window setup
+        
+        # Central Layout
         self.setWindowTitle("Finn Made Uno")
         self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+        main_layout = QVBoxLayout(main_widget)
 
-        # Create layout
-        layout = QGridLayout()
-        self.setLayout(layout)
+        self.stacked_widget = QStackedWidget()
 
+        # Page 1
+        page1 = QWidget()
+        layout1 = QGridLayout(page1)
         # Create title
         self.title = QLabel("Finn Made Uno")
-
+        # Create play button
+        self.start_button = QPushButton()
+        self.start_button.setText("Play")
+        self.start_button.move(750, 650)
+        self.start_button.clicked.connect(self.start_game)
         # Create settings button
         self.settings_button = QPushButton()
         self.settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
         self.settings_button.move(750, 650)
         self.settings_button.setFixedSize(32, 32)
         self.settings_button.clicked.connect(self.open_settings)
-
         # Add widgets
-        layout.addWidget(self.title)
-        layout.addWidget(self.settings_button)
+        layout1.addWidget(self.title)
+        layout1.addWidget(self.start_button)
+        layout1.addWidget(self.settings_button)
+
+        self.stacked_widget.addWidget(page1)
+        self.stacked_widget.addWidget(page2)
+
+    def start_game(self):
+        uno = Uno()
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
@@ -48,6 +68,17 @@ class MainWindow(QWidget):
         else:
             print("Settings canceled/closed")
 
+class GameWindow(QWidget):
+    def __init__(self):
+        # Window setup
+        self.setWindowTitle("Finn Made Uno")
+        self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
+        self.setGeometry(800, 600, 800, 600)
+
+        # Create layout
+        layout = QGridLayout()
+        self.setLayout(layout)
+        
 class SettingsWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)

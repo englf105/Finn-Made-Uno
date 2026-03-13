@@ -47,5 +47,3 @@ class Ai:
                         can_place = True
                 if can_place:
                     self.botTurn(uno, players)
-
-        
