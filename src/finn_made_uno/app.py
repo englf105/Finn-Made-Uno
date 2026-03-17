@@ -7,15 +7,16 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QWidget,
-    QGridLayout,
     QDialog,
     QCheckBox,
     QMainWindow,
     QStackedWidget,
+    QStackedLayout,
+    QHBoxLayout,
 )
 
 
-from uno import Uno
+from game import Game
 
 
 class MainWindow(QMainWindow):
@@ -26,38 +27,62 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Finn Made Uno")
         self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
-        main_widget = QWidget()
-        self.setCentralWidget(main_widget)
-        main_layout = QVBoxLayout(main_widget)
-
         self.stacked_widget = QStackedWidget()
+        self.setCentralWidget(self.stacked_widget)
 
         # Page 1
-        page1 = QWidget()
-        layout1 = QGridLayout(page1)
+        self.home_page = QWidget()
+        layout1 = QHBoxLayout(self.home_page)
+
         # Create title
-        self.title = QLabel("Finn Made Uno")
+        layout1.addWidget(QLabel("Finn Made Uno"))
+
         # Create play button
-        self.start_button = QPushButton()
-        self.start_button.setText("Play")
-        self.start_button.move(750, 650)
-        self.start_button.clicked.connect(self.start_game)
+        start_button = QPushButton()
+        start_button.setText("Play")
+        start_button.setFixedSize(64, 32)
+        start_button.clicked.connect(self.play_game)
+        layout1.addWidget(start_button)
+
         # Create settings button
-        self.settings_button = QPushButton()
-        self.settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
-        self.settings_button.move(750, 650)
-        self.settings_button.setFixedSize(32, 32)
-        self.settings_button.clicked.connect(self.open_settings)
-        # Add widgets
-        layout1.addWidget(self.title)
-        layout1.addWidget(self.start_button)
-        layout1.addWidget(self.settings_button)
+        settings_button = QPushButton()
+        settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
+        settings_button.setFixedSize(32, 32)
+        settings_button.clicked.connect(self.open_settings)
+        layout1.addWidget(settings_button)
+        
+        self.home_page.setLayout(layout1)
 
-        self.stacked_widget.addWidget(page1)
-        self.stacked_widget.addWidget(page2)
+        # Page 2
+        self.game_page = QWidget()
+        layout2 = QStackedLayout(self.game_page)
 
-    def start_game(self):
-        uno = Uno()
+        # Add the pages to the layout
+        self.stacked_widget.addWidget(self.home_page)
+        self.stacked_widget.addWidget(self.game_page)
+
+    def play_game(self):
+        # Change the window to be the game
+        self.stacked_widget.setCurrentIndex(1)
+        
+        # Setup the game
+        """ Game Setup """
+        uno = Game()
+
+        """ Settings """
+        uno.place_after_draw = SettingsWindow.after_draw_cbox.isChecked() # Working
+        uno.draw_till_place = SettingsWindow.til_place_cbox.isChecked() # Working
+        uno.stack_plus_cards = SettingsWindow.stack_plus_cbox.isChecked() # Working
+
+        # Start game loop
+        """ Game Loop """
+        while uno.playerHasCards():
+            uno.displayTurnInfo()
+            uno.playerTurn()
+            uno.nextTurn()
+        
+        """ Game Loop Ends """
+        print(uno.winnerMessage())
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
@@ -67,18 +92,8 @@ class MainWindow(QMainWindow):
             print("Settings saved/accepted")
         else:
             print("Settings canceled/closed")
-
-class GameWindow(QWidget):
-    def __init__(self):
-        # Window setup
-        self.setWindowTitle("Finn Made Uno")
-        self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
-        self.setGeometry(800, 600, 800, 600)
-
-        # Create layout
-        layout = QGridLayout()
-        self.setLayout(layout)
         
+
 class SettingsWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -86,9 +101,23 @@ class SettingsWindow(QDialog):
         layout = QVBoxLayout()
         # Add settings widgets here
         layout.addWidget(QLabel("Select Settings:"))
-        layout.addWidget(QCheckBox("Place after drawing"))
-        layout.addWidget(QCheckBox("Draw until place"))
-        layout.addWidget(QCheckBox("Stack plus cards"))
+
+        self.after_draw_cbox = QCheckBox("Place after drawing")
+        layout.addWidget(self.after_draw_cbox)
+
+        self.til_place_cbox = QCheckBox("Draw until place")
+        layout.addWidget(self.til_place_cbox)
+
+        self.stack_plus_cbox = QCheckBox("Stack plus cards")
+        layout.addWidget(self.stack_plus_cbox)
+
+        self.after_draw_cbox.toggled.connect(self.til_place_cbox.setEnabled(False))
+        self.after_draw_cbox.toggled.connect(
+            lambda checked: not checked and self.til_place_cbox.setEnabled)
+        self.til_place_cbox.toggled.connect(self.after_draw_cbox.setEnabled(False))
+        self.til_place_cbox.toggled.connect(
+            lambda checked: not checked and self.after_draw_cbox.setEnabled)
+
         layout.addStretch()
         self.setLayout(layout)
 

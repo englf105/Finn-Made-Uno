@@ -42,7 +42,7 @@ class Game():
             self.player_amount = int(input("Enter total amount of players (2-6): ")) - 1
             if self.player_amount > 5 or self.player_amount < 1:
                 print("\n///// Invalid  amount of players /////\n")
-        self.players.append(Ai(self)) # Adds player to first player slot
+        self.players.append(Player(self)) # Adds player to first player slot
         for i in range(self.player_amount):
             self.players.append(Ai(self)) # Adds the amount of Ai inputted
 
