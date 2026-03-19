@@ -13,9 +13,11 @@ from PyQt6.QtWidgets import (
     QStackedWidget,
     QStackedLayout,
     QHBoxLayout,
+    QButtonGroup,
 )
 
 
+from functools import partial
 from game import Game
 
 
@@ -95,31 +97,41 @@ class MainWindow(QMainWindow):
         
 
 class SettingsWindow(QDialog):
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Settings")
         layout = QVBoxLayout()
         # Add settings widgets here
         layout.addWidget(QLabel("Select Settings:"))
+        
+        self.settings_buttons = []
+        for text in ("Place after drawing", 
+                     "Draw until place", 
+                     "Stack plus cards"):
+            checkbox = QCheckBox(text)
+            checkbox.clicked.connect(partial(self.check_settings, text))
+            #checkbox.toggle()
+            layout.addWidget(checkbox)
+            self.settings_buttons.append(checkbox)
 
-        self.after_draw_cbox = QCheckBox("Place after drawing")
-        layout.addWidget(self.after_draw_cbox)
-
-        self.til_place_cbox = QCheckBox("Draw until place")
-        layout.addWidget(self.til_place_cbox)
-
-        self.stack_plus_cbox = QCheckBox("Stack plus cards")
-        layout.addWidget(self.stack_plus_cbox)
-
-        self.after_draw_cbox.toggled.connect(self.til_place_cbox.setEnabled(False))
-        self.after_draw_cbox.toggled.connect(
-            lambda checked: not checked and self.til_place_cbox.setEnabled)
-        self.til_place_cbox.toggled.connect(self.after_draw_cbox.setEnabled(False))
-        self.til_place_cbox.toggled.connect(
-            lambda checked: not checked and self.after_draw_cbox.setEnabled)
 
         layout.addStretch()
         self.setLayout(layout)
+
+    def check_settings(self, text): 
+        place,draw,stack = self.settings_buttons
+        if draw.isChecked() and place.isChecked():
+            if "Place" in text:
+                draw.toggle()
+            else:
+                place.toggle()
+
+
+        for button in self.settings_buttons:
+            print(f"Checkbox = {button.isChecked()}")
+    
+
 
 def main():
     app = QApplication(sys.argv)
