@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtGui import QIcon, QPixmap, QPainter
-
+from PyQt6.QtCore import QSettings
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -34,26 +34,26 @@ class MainWindow(QMainWindow):
 
         # Page 1
         self.home_page = QWidget()
-        layout1 = QHBoxLayout(self.home_page)
+        self.layout1 = QHBoxLayout(self.home_page)
 
         # Create title
-        layout1.addWidget(QLabel("Finn Made Uno"))
+        self.layout1.addWidget(QLabel("Finn Made Uno"))
 
         # Create play button
         start_button = QPushButton()
         start_button.setText("Play")
         start_button.setFixedSize(64, 32)
         start_button.clicked.connect(self.play_game)
-        layout1.addWidget(start_button)
+        self.layout1.addWidget(start_button)
 
         # Create settings button
         settings_button = QPushButton()
         settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
         settings_button.setFixedSize(32, 32)
         settings_button.clicked.connect(self.open_settings)
-        layout1.addWidget(settings_button)
+        self.layout1.addWidget(settings_button)
         
-        self.home_page.setLayout(layout1)
+        self.home_page.setLayout(self.layout1)
 
         # Page 2
         self.game_page = QWidget()
@@ -72,15 +72,27 @@ class MainWindow(QMainWindow):
         uno = Game()
 
         """ Settings """
-        uno.place_after_draw = SettingsWindow.after_draw_cbox.isChecked() # Working
-        uno.draw_till_place = SettingsWindow.til_place_cbox.isChecked() # Working
-        uno.stack_plus_cards = SettingsWindow.stack_plus_cbox.isChecked() # Working
+        place,draw,stack = SettingsWindow.settings_buttons
+        uno.place_after_draw = place.isChecked()
+        uno.draw_till_place = draw.isChecked()
+        uno.stack_plus_cards = stack.isChecked()
+
+
 
         # Start game loop
         """ Game Loop """
         while uno.playerHasCards():
-            uno.displayTurnInfo()
+
+            # Displays the turn info
+            uno.displayTurnInfo() # In terminal
+            cards = QLabel()
+            cards = uno.players[0].hand.cards
+
+
+            # Lets the player/robot either play their card or draw
             uno.playerTurn()
+
+            # Goes to the next turn
             uno.nextTurn()
         
         """ Game Loop Ends """
@@ -88,9 +100,9 @@ class MainWindow(QMainWindow):
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
-        dlg = SettingsWindow(self)
+        settings_window = SettingsWindow(self)
         # Use exec() to run the dialog modally (blocks input to other windows)
-        if dlg.exec() == QDialog.DialogCode.Accepted:
+        if settings_window.exec() == QDialog.DialogCode.Accepted:
             print("Settings saved/accepted")
         else:
             print("Settings canceled/closed")
@@ -98,26 +110,31 @@ class MainWindow(QMainWindow):
 
 class SettingsWindow(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
         super().__init__(parent)
+        self.settings = QSettings('Finn-Made-Uno', 'Settings')
+
         self.setWindowTitle("Settings")
         layout = QVBoxLayout()
         # Add settings widgets here
         layout.addWidget(QLabel("Select Settings:"))
-        
         self.settings_buttons = []
         for text in ("Place after drawing", 
                      "Draw until place", 
                      "Stack plus cards"):
             checkbox = QCheckBox(text)
             checkbox.clicked.connect(partial(self.check_settings, text))
-            #checkbox.toggle()
             layout.addWidget(checkbox)
             self.settings_buttons.append(checkbox)
-
-
         layout.addStretch()
         self.setLayout(layout)
+
+        self.load_settings()
+
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.accept) 
+        layout.addWidget(self.save_button)
+
 
     def check_settings(self, text): 
         place,draw,stack = self.settings_buttons
@@ -127,9 +144,24 @@ class SettingsWindow(QDialog):
             else:
                 place.toggle()
 
+    def load_settings(self):
+        place,draw,stack = self.settings_buttons
+        place = self.settings.value('check1', place.setChecked(False))
+        draw = self.settings.value('check2', draw.setChecked(False))
+        stack = self.settings.value('check3', stack.setChecked(False))
+        print("Settings loaded.")
 
-        for button in self.settings_buttons:
-            print(f"Checkbox = {button.isChecked()}")
+    def save_settings(self):
+        place,draw,stack = self.settings_buttons
+        self.settings.setValue('check1', place.isChecked())
+        self.settings.setValue('check2', draw.isChecked())
+        self.settings.setValue('check3', stack.isChecked())
+        print("Settings saved.")
+        print(self.settings.value('check1'))
+
+    def closeEvent(self, event):
+        self.save_settings()
+        super().closeEvent(event)
     
 
 
