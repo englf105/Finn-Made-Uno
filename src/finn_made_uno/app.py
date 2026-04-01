@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
 
         # Page 2
         self.game_page = QWidget()
-        layout2 = QStackedLayout(self.game_page)
+        self.layout2 = QStackedLayout(self.game_page)
 
         # Add the pages to the layout
         self.stacked_widget.addWidget(self.home_page)
@@ -78,15 +78,14 @@ class MainWindow(QMainWindow):
         uno.stack_plus_cards = stack.isChecked()
 
 
-
         # Start game loop
         """ Game Loop """
         while uno.playerHasCards():
 
             # Displays the turn info
             uno.displayTurnInfo() # In terminal
-            cards = QLabel()
-            cards = uno.players[0].hand.cards
+            cards = QLabel(uno.players[0].hand.cards)
+            self.layout2.addWidget(cards)
 
 
             # Lets the player/robot either play their card or draw
@@ -100,9 +99,9 @@ class MainWindow(QMainWindow):
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
-        settings_window = SettingsWindow(self)
+        self.settings_window = SettingsWindow(self)
         # Use exec() to run the dialog modally (blocks input to other windows)
-        if settings_window.exec() == QDialog.DialogCode.Accepted:
+        if self.settings_window.exec() == QDialog.DialogCode.Accepted:
             print("Settings saved/accepted")
         else:
             print("Settings canceled/closed")
