@@ -27,7 +27,6 @@ class Game():
         
         print(f"\033[33m===== Welcome to Uno! =====\033[0m")    
         self.setStartingCard()
-        self.setPlayerAmount()   
 
     def setStartingCard(self):
         forbidden_cards = ["skip", "reverse", "plus", "card", "plus_4"]

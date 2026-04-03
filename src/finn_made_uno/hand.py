@@ -7,6 +7,15 @@ class Hand:
     def __init__(self):
         self.cards = []
 
+    def __str__(self):
+        self.cards.sort(key=lambda s: (Card.color.index(s.color), s.number))
+        if self.cards:
+            rep = ""
+            for card in (self.cards):
+                rep += str(card) + ", "
+        else: rep = "<empty>"
+        return rep
+
     def displayHand(self, display_card, player):
         self.cards.sort(key=lambda s: (Card.color.index(s.color), s.number))
         if self.cards:
