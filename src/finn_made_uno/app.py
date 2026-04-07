@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.player_amount_selection)
         self.stacked_widget.addWidget(self.game_page)
     
-    def setPlayerAmount(self, uno):
+    def setPlayerAmount(self):
 
         # Change the window to be the game
         self.stacked_widget.setCurrentIndex(1)
@@ -81,13 +81,18 @@ class MainWindow(QMainWindow):
         self.slider.setMinimum(2)
         self.slider.setMaximum(6)
         self.slider.setSingleStep(1)
+        self.slider.valueChanged.connect(self.handle_change)
         self.layout2.addWidget(self.slider)
 
-        slider_btn = QPushButton()
-        slider_btn.setText(f"Play with {self.slider.value()} players")
-        slider_btn.clicked.connect(self.play_game)
-        self.layout2.addWidget(slider_btn)
+        self.slider_btn = QPushButton()
+        self.slider_btn.setText(f"Play with {self.slider.value()} players")
+        self.slider_btn.clicked.connect(self.play_game)
+        self.layout2.addWidget(self.slider_btn)
         self.layout2.addStretch()
+
+    def handle_change(self):
+        print(f"Slider moved to: {self.slider.value()}")
+        self.slider_btn.setText(f"Play with {self.slider.value()} players")
 
     def play_game(self):
         # Change the window to be the game
@@ -96,9 +101,9 @@ class MainWindow(QMainWindow):
         # Setup the game
         """ Game Setup """
         uno = Game()
-        uno.player_amount = self.slider.value()
+        uno.player_amount = self.slider.value() - 1
+        uno.addPlayers()
             
-
         """ Settings """
         # place,draw,stack = SettingsWindow.settings_buttons
         uno.place_after_draw = False #place.isChecked()
@@ -106,23 +111,30 @@ class MainWindow(QMainWindow):
         uno.stack_plus_cards = False #stack.isChecked()
 
         # Displays player info
-        cards = QLabel(str(uno.players[0].hand))
-        self.layout3.addWidget(cards)
+        current_card = QLabel(str(uno.display_card))
+        self.layout3.addWidget(current_card)
 
         # Start game loop
         """ Game Loop """
         while uno.playerHasCards():
 
             # Displays the turn info
+            current_card.setText(f"Current Card: " + str(uno.display_card))
             uno.displayTurnInfo() # In terminal
 
             #Creates buttons to select cards
-            for card in uno.players[uno.turn].hand.cards:
+            for card in uno.players[0].hand.cards:
                 btn = QPushButton()
                 btn.setText(str(card))
                 btn.adjustSize()
-                btn.clicked.connect(lambda checked, i = card: self.play_card(i))
+                btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
                 self.layout3.addWidget(btn)
+
+            draw_btn = QPushButton()
+            draw_btn.setText("Draw")
+            draw_btn.adjustSize()
+            draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
+            self.layout3.addWidget(draw_btn)
 
             # Lets the player/robot either play their card or draw
             uno.playerTurn()
@@ -133,8 +145,11 @@ class MainWindow(QMainWindow):
         """ Game Loop Ends """
         print(uno.winnerMessage())
 
-    def play_card(self, button_name):
-        print(f"Button clicked: {button_name}")
+    def draw_card(self, uno):
+        uno.players[0].drawCard(uno)
+
+    def play_card(self, uno, card):
+        uno.players[0].playCard(uno, card)
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
