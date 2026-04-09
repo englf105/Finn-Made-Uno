@@ -25,6 +25,7 @@ import threading
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.settings = SettingsWindow()
         
         # Central Layout
         self.setWindowTitle("Finn Made Uno")
@@ -105,57 +106,69 @@ class MainWindow(QMainWindow):
         uno.addPlayers()
             
         """ Settings """
-        # place,draw,stack = SettingsWindow.settings_buttons
-        uno.place_after_draw = False #place.isChecked()
-        uno.draw_till_place = False #draw.isChecked()
-        uno.stack_plus_cards = False #stack.isChecked()
+        place, draw, stack = self.settings.settings_buttons
+        uno.place_after_draw = place.isChecked()
+        uno.draw_till_place = draw.isChecked()
+        uno.stack_plus_cards = stack.isChecked()
 
         # Displays player info
-        current_card = QLabel(str(uno.display_card))
-        self.layout3.addWidget(current_card)
+        self.current_card = QLabel(str(uno.display_card))
+        self.layout3.addWidget(self.current_card)
 
         # Start game loop
         """ Game Loop """
-        while uno.playerHasCards():
-
-            # Displays the turn info
-            current_card.setText(f"Current Card: " + str(uno.display_card))
-            uno.displayTurnInfo() # In terminal
-
-            #Creates buttons to select cards
-            for card in uno.players[0].hand.cards:
-                btn = QPushButton()
-                btn.setText(str(card))
-                btn.adjustSize()
-                btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
-                self.layout3.addWidget(btn)
-
-            draw_btn = QPushButton()
-            draw_btn.setText("Draw")
-            draw_btn.adjustSize()
-            draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
-            self.layout3.addWidget(draw_btn)
-
-            # Lets the player/robot either play their card or draw
-            uno.playerTurn()
-
-            # Goes to the next turn
-            uno.nextTurn()
+        self.game_loop(uno)
         
         """ Game Loop Ends """
         print(uno.winnerMessage())
 
+    def game_loop(self, uno):
+        """ Game Loop """
+        if uno.playerHasCards():
+            # Displays the turn info
+            self.current_card.setText(f"Current Card: " + str(uno.display_card))
+            uno.displayTurnInfo() # In terminal
+
+            self.update_options(uno)
+
+            # Ai plays its turn if its not the players
+            if uno.turn != 0:
+                uno.playerTurn()
+                self.game_loop(uno)
+
+        else: 
+            """ Game Loop Ends """
+            print(uno.winnerMessage())
+
+    def update_options(self, uno):
+        #Creates buttons to select cards
+        for card in uno.players[0].hand.cards:
+            btn = QPushButton()
+            btn.setText(str(card))
+            btn.adjustSize()
+            btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
+            self.layout3.addWidget(btn)
+
+        # Creates the draw button
+        draw_btn = QPushButton()
+        draw_btn.setText("Draw")
+        draw_btn.adjustSize()
+        draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
+        self.layout3.addWidget(draw_btn)
+
     def draw_card(self, uno):
-        uno.players[0].drawCard(uno)
+        check = uno.players[0].drawCard(uno)
+        if check: self.game_loop(uno)
 
     def play_card(self, uno, card):
-        uno.players[0].playCard(uno, card)
+        check = uno.players[0].playCard(uno, card)
+        if check: self.game_loop(uno)
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
-        self.settings_window = SettingsWindow(self)
+        # self.settings_window = SettingsWindow(self)
         # Use exec() to run the dialog modally (blocks input to other windows)
-        if self.settings_window.exec() == QDialog.DialogCode.Accepted:
+        if self.settings.exec() == QDialog.DialogCode.Accepted:
             print("Settings saved/accepted")
         else:
             print("Settings canceled/closed")

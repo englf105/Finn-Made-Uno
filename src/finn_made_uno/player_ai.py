@@ -24,6 +24,8 @@ class Ai:
                         uno.checkEffect() # Applies effects skip, plus, or reverse
                         card_placed = True
                         break # Ends card search after card is placed
+                if card_placed: 
+                    uno.nextTurn() # Goes to the next turn
             
         if not card_placed:
             for item in bot_cards:
@@ -33,6 +35,8 @@ class Ai:
                     uno.checkEffect() # Applies effects skip, plus, or reverse
                     card_placed = True
                     break # Ends card search after card is placed
+            if card_placed: 
+                uno.nextTurn() # Goes to the next turn
         
         """ If no card in hand is placeable """
         if not card_placed:
@@ -40,6 +44,7 @@ class Ai:
             players[uno.turn].hand.drawCard(1, uno)
             if uno.draw_till_place:
                 self.botTurn(uno, players)
+
             elif uno.place_after_draw and not uno.draw_till_place:
                 can_place = False
                 for item in self.hand.cards:
@@ -47,3 +52,9 @@ class Ai:
                         can_place = True
                 if can_place:
                     self.botTurn(uno, players)
+                else:
+                    uno.nextTurn() # Goes to the next turn
+                
+            else:
+                uno.nextTurn() # Goes to the next turn
+
