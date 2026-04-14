@@ -25,8 +25,9 @@ class Player:
                 print(f"\n\033[32m===== A {card} was placed! =====\033[0m")
                 uno.placeCard(player_cards, card) # Places Card from hand
                 uno.checkEffect() # Applies effects skip, plus, or reverse
-                uno.nextTurn() # Goes to the next turn
-                return True
+                if uno.display_card.color != "wild":
+                    uno.nextTurn() # Goes to the next turn
+                    return True
                  
         else: print("\n///// Cannot play card. /////")
 

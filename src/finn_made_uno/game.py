@@ -37,10 +37,6 @@ class Game():
         self.display_card = copy.deepcopy(self.discards[-1])
 
     def addPlayers(self):
-        # while self.player_amount > 5 or self.player_amount < 1:
-        #    self.player_amount = int(input("Enter total amount of players (2-6): ")) - 1
-        #    if self.player_amount > 5 or self.player_amount < 1:
-        #        print("\n///// Invalid  amount of players /////\n")
         self.players.append(Player(self)) # Adds player to first player slot
         for i in range(self.player_amount):
             self.players.append(Ai(self)) # Adds the amount of Ai inputted
@@ -81,22 +77,16 @@ class Game():
     def checkWild(self):
         if self.display_card.color == "wild":
             if isinstance(self.players[self.turn], Player):
-                color = ""
-                colors = ["r", "y", "g", "b"]
-                while color not in colors:
-                    color = input("\nEnter color you wish to change to (r/y/g/b): ")
-                for item in Card.color:
-                    if color == item[0]:
-                        self.display_card.color = item
-            elif isinstance(self.players[self.turn], Ai):
+                return False
+            if isinstance(self.players[self.turn], Ai):
                 for card in self.players[self.turn].hand.cards:
                     if card.color != "wild":
                         self.display_card.color = card.color
                         break
                 if self.display_card.color == "wild":
                     self.display_card.color = random.choice(Card.color[:4])
-            self.display_card.number = "<any>"
-            print(f"\n===== Color has been changed to {self.display_card.color}! =====")
+                self.display_card.number = "<any>"
+                print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
     def checkPlus(self):
         # If the card placed was a plus card

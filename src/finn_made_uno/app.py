@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import (
 
 from functools import partial
 from game import Game
+from card import Card
 import threading
 
 
@@ -168,7 +169,25 @@ class MainWindow(QMainWindow):
 
     def play_card(self, uno, card):
         check = uno.players[0].playCard(uno, card)
+        if card.color == "wild":
+            self.create_wild_buttons(uno)
         if check: self.game_loop(uno)
+
+    def create_wild_buttons(self, uno):
+        current_card = QLabel("What color do you want?:")
+        self.layout3.addWidget(current_card)
+        for color in Card.color[:-1]:
+            btn = QPushButton()
+            btn.setText(str(color))
+            btn.clicked.connect(lambda: self.choose_color(uno, color))
+            self.layout3.addWidget(btn)
+
+    def choose_color(self, uno, color):
+        uno.display_card.color = color
+        uno.display_card.number = "<any>"
+        print(f"\n===== Color has been changed to {uno.display_card.color}! =====")
+        uno.nextTurn()
+        self.game_loop(uno)
 
     def game_win(self, uno):
         """ Game Loop Ends """
