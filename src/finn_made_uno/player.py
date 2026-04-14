@@ -41,9 +41,15 @@ class Player:
                 if uno.validCard(item):
                     can_place = True
                     print("\n===== Drawn card can be placed! =====")
+                    return True
 
             if not can_place:
                 print("\n===== Drawn card cannot be placed! =====")
+                uno.nextTurn() # Goes to the next turn
+                return True
+
+        elif uno.draw_till_place:
+            return True
                 
         if not uno.draw_till_place and not uno.place_after_draw: 
             print("\n===== No other rules selected. =====")

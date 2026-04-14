@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         start_button = QPushButton()
         start_button.setText("Play")
         start_button.setFixedSize(64, 32)
-        start_button.clicked.connect(self.setPlayerAmount)
+        start_button.clicked.connect(self.set_player_amount)
         self.layout1.addWidget(start_button)
 
         # Create settings button
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.player_amount_selection)
         self.stacked_widget.addWidget(self.game_page)
     
-    def setPlayerAmount(self):
+    def set_player_amount(self):
 
         # Change the window to be the game
         self.stacked_widget.setCurrentIndex(1)
@@ -112,11 +112,6 @@ class MainWindow(QMainWindow):
         uno.draw_till_place = draw.isChecked()
         uno.stack_plus_cards = stack.isChecked()
 
-        # Displays player info
-        self.current_card = QLabel(str(uno.display_card))
-        self.layout3.addWidget(self.current_card)
-        self.buttons = []
-
         # Start game loop
         """ Game Loop """
         self.game_loop(uno)
@@ -128,7 +123,6 @@ class MainWindow(QMainWindow):
         """ Game Loop """
         if uno.playerHasCards():
             # Displays the turn info
-            self.current_card.setText(f"Current Card: " + str(uno.display_card))
             uno.displayTurnInfo() # In terminal
 
             self.update_options(uno)
@@ -140,21 +134,25 @@ class MainWindow(QMainWindow):
 
         else: 
             """ Game Loop Ends """
-            print(uno.winnerMessage())
+            self.game_win(uno)
 
     def update_options(self, uno):
 
-        for item in self.buttons:
-            self.layout3.removeWidget(item)
-
         if uno.turn == 0:
-            #Creates buttons to select cards
+
+            # Get rid of previous widgets
+            self.clear_layout(self.layout3)
+
+            # Displays player info
+            current_card = QLabel("Current Card: " + str(uno.display_card))
+            self.layout3.addWidget(current_card)
+
+            # Creates new buttons to select cards
             for card in uno.players[0].hand.cards:
                 btn = QPushButton()
                 btn.setText(str(card))
                 btn.adjustSize()
                 btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
-                self.buttons.append(btn)
                 self.layout3.addWidget(btn)
 
             # Creates the draw button
@@ -162,7 +160,6 @@ class MainWindow(QMainWindow):
             draw_btn.setText("Draw")
             draw_btn.adjustSize()
             draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
-            self.buttons.append(draw_btn)
             self.layout3.addWidget(draw_btn)
 
     def draw_card(self, uno):
@@ -177,7 +174,9 @@ class MainWindow(QMainWindow):
         """ Game Loop Ends """
         print(uno.winnerMessage())
         self.stacked_widget.setCurrentIndex(0)
+        self.clear_layout(self.layout2)
         self.clear_layout(self.layout3)
+        del uno
     
     def clear_layout(self, layout):
         if layout is not None:
@@ -251,7 +250,6 @@ class SettingsWindow(QDialog):
         self.settings.setValue('check2', draw.isChecked())
         self.settings.setValue('check3', stack.isChecked())
         print("Settings saved.")
-        print(self.settings.value('check1'))
 
     def closeEvent(self, event):
         self.save_settings()
