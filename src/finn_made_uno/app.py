@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
         for color in Card.color[:-1]:
             btn = QPushButton()
             btn.setText(str(color))
-            btn.clicked.connect(lambda: self.choose_color(uno, color))
+            btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.layout3.addWidget(btn)
 
     def choose_color(self, uno, color):
