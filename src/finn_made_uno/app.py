@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         
         # Central Layout
         self.setWindowTitle("Finn Made Uno")
-        self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
+        self.setWindowIcon(QIcon('src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 
         # Create settings button
         settings_button = QPushButton()
-        settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
+        settings_button.setIcon(QIcon('src/finn_made_uno/assets/settings.png'))
         settings_button.setFixedSize(32, 32)
         settings_button.clicked.connect(self.open_settings)
         self.layout1.addWidget(settings_button)
