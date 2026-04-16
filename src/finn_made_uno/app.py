@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         
         # Central Layout
         self.setWindowTitle("Finn Made Uno")
-        self.setWindowIcon(QIcon('src/finn_made_uno/assets/uno_icon_32.png'))
+        self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 
         # Create settings button
         settings_button = QPushButton()
-        settings_button.setIcon(QIcon('src/finn_made_uno/assets/settings.png'))
+        settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
         settings_button.setFixedSize(32, 32)
         settings_button.clicked.connect(self.open_settings)
         self.layout1.addWidget(settings_button)
@@ -144,16 +144,28 @@ class MainWindow(QMainWindow):
             # Get rid of previous widgets
             self.clear_layout(self.layout3)
 
-            # Displays player info
+            # Displays turn info
             current_card = QLabel("Current Card: " + str(uno.display_card))
             self.layout3.addWidget(current_card)
 
+            # Display player info
+            for player in uno.players:
+                current_player = str(uno.players.index(player) + 1)
+                current_hand =  str(len(player.hand.cards))
+                card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
+                self.layout3.addWidget(card_count)
+
+            hand_text = QLabel("Your hand:")
+            self.layout3.addWidget(hand_text)
+
             # Creates new buttons to select cards
+            self.buttons = []
             for card in uno.players[0].hand.cards:
                 btn = QPushButton()
                 btn.setText(str(card))
                 btn.adjustSize()
                 btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
+                self.buttons.append(btn)
                 self.layout3.addWidget(btn)
 
             # Creates the draw button
@@ -161,7 +173,11 @@ class MainWindow(QMainWindow):
             draw_btn.setText("Draw")
             draw_btn.adjustSize()
             draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
+            self.buttons.append(draw_btn)
             self.layout3.addWidget(draw_btn)
+
+            # Positions the buttons
+            self.layout3.addStretch()
 
     def draw_card(self, uno):
         check = uno.players[0].drawCard(uno)
@@ -174,6 +190,8 @@ class MainWindow(QMainWindow):
         if check: self.game_loop(uno)
 
     def create_wild_buttons(self, uno):
+        for btn in self.buttons:
+            btn.setEnabled(False)
         current_card = QLabel("What color do you want?:")
         self.layout3.addWidget(current_card)
         for color in Card.color[:-1]:
