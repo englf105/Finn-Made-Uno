@@ -1,6 +1,7 @@
 import sys
-from PyQt6.QtGui import QIcon, QPixmap, QPainter
-from PyQt6.QtCore import QSettings, Qt
+import time
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import QSettings, Qt, QSize
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -139,34 +140,47 @@ class MainWindow(QMainWindow):
 
     def update_options(self, uno):
 
+        # Get rid of previous widgets
+        self.clear_layout(self.layout3)
+
+        # Displays turn info
+        current_card = QLabel("Current Card:")
+        self.layout3.addWidget(current_card)
+        current_card_display = QLabel()
+        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(uno.display_card)}" + ".png")
+        current_card_display.setPixmap(file_path)
+        self.layout3.addWidget(current_card_display)
+
+        # Display player info
+        for player in uno.players:
+            current_player = str(uno.players.index(player) + 1)
+            current_hand =  str(len(player.hand.cards))
+            card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
+            self.layout3.addWidget(card_count)
+
         if uno.turn == 0:
-
-            # Get rid of previous widgets
-            self.clear_layout(self.layout3)
-
-            # Displays turn info
-            current_card = QLabel("Current Card: " + str(uno.display_card))
-            self.layout3.addWidget(current_card)
-
-            # Display player info
-            for player in uno.players:
-                current_player = str(uno.players.index(player) + 1)
-                current_hand =  str(len(player.hand.cards))
-                card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
-                self.layout3.addWidget(card_count)
 
             hand_text = QLabel("Your hand:")
             self.layout3.addWidget(hand_text)
 
             # Creates new buttons to select cards
+            hand_layout = QHBoxLayout()
             self.buttons = []
             for card in uno.players[0].hand.cards:
                 btn = QPushButton()
-                btn.setText(str(card))
+                file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(card)}" + ".png"
+                btn.setIcon(QIcon(file_path))
+                btn.setIconSize(QSize(64, 64))
+                btn.setFixedSize(48, 64)
                 btn.adjustSize()
                 btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
                 self.buttons.append(btn)
-                self.layout3.addWidget(btn)
+                hand_layout.addWidget(btn)
+            hand_layout.addStretch()
+            if uno.turn != 0:
+                for btn in self.buttons:
+                    btn.setEnabled(False)
+            self.layout3.addLayout(hand_layout)
 
             # Creates the draw button
             draw_btn = QPushButton()
@@ -194,10 +208,12 @@ class MainWindow(QMainWindow):
             btn.setEnabled(False)
         current_card = QLabel("What color do you want?:")
         self.layout3.addWidget(current_card)
+        self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
             btn.setText(str(color))
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
+            self.color_buttons.append(btn)
             self.layout3.addWidget(btn)
 
     def choose_color(self, uno, color):
@@ -205,6 +221,8 @@ class MainWindow(QMainWindow):
         uno.display_card.number = "<any>"
         print(f"\n===== Color has been changed to {uno.display_card.color}! =====")
         uno.nextTurn()
+        for btn in self.color_buttons:
+            btn.deleteLater()
         self.game_loop(uno)
 
     def game_win(self, uno):
@@ -292,7 +310,6 @@ class SettingsWindow(QDialog):
         self.save_settings()
         super().closeEvent(event)
     
-
 
 def main():
     app = QApplication(sys.argv)

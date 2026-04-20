@@ -85,7 +85,7 @@ class Game():
                         break
                 if self.display_card.color == "wild":
                     self.display_card.color = random.choice(Card.color[:4])
-                self.display_card.number = "<any>"
+                self.display_card.number = "any"
                 print(f"\n===== Color has been changed to {self.display_card.color}! =====")
 
     def checkPlus(self):
