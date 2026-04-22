@@ -65,7 +65,8 @@ class MainWindow(QMainWindow):
 
         # Page 3
         self.game_page = QWidget()
-        self.layout3 = QVBoxLayout(self.game_page)
+        self.layout3 = QStackedLayout(self.game_page)
+        self.layout3.setStackingMode(QStackedLayout.StackingMode.StackAll)
 
         # Add the pages to the layout
         self.stacked_widget.addWidget(self.home_page)
@@ -143,25 +144,44 @@ class MainWindow(QMainWindow):
         # Get rid of previous widgets
         self.clear_layout(self.layout3)
 
+        # Create background layer
+        self.background = QWidget()
+        self.layer1 = QVBoxLayout(self.background)
+
+        background_image = QLabel()
+        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
+        background_image.setPixmap(file_path)
+        self.layer1.addWidget(background_image)
+
+        # Create player info layer
+        self.player_info = QWidget()
+        self.layer2 = QVBoxLayout(self.player_info)
+        self.player_info.setStyleSheet("background: transparent; color: black;")
+
+        # Create card info layer
+        self.card_display = QWidget()
+        self.layer3 = QVBoxLayout(self.card_display)
+        self.card_display.setStyleSheet("background: transparent; color: black;")
+
         # Displays turn info
         current_card = QLabel("Current Card:")
-        self.layout3.addWidget(current_card)
+        self.layer2.addWidget(current_card)
         current_card_display = QLabel()
         file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(uno.display_card)}" + ".png")
         current_card_display.setPixmap(file_path)
-        self.layout3.addWidget(current_card_display)
+        self.layer2.addWidget(current_card_display)
 
         # Display player info
         for player in uno.players:
             current_player = str(uno.players.index(player) + 1)
             current_hand =  str(len(player.hand.cards))
             card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
-            self.layout3.addWidget(card_count)
+            self.layer2.addWidget(card_count)
 
         if uno.turn == 0:
 
             hand_text = QLabel("Your hand:")
-            self.layout3.addWidget(hand_text)
+            self.layer2.addWidget(hand_text)
 
             # Creates new buttons to select cards
             hand_layout = QHBoxLayout()
@@ -170,9 +190,10 @@ class MainWindow(QMainWindow):
                 btn = QPushButton()
                 file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(card)}" + ".png"
                 btn.setIcon(QIcon(file_path))
-                btn.setIconSize(QSize(64, 64))
+                btn.setIconSize(QSize(96, 128))
                 btn.setFixedSize(48, 64)
                 btn.adjustSize()
+                btn.setStyleSheet("background-color: transparent; border: none;")
                 btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
                 self.buttons.append(btn)
                 hand_layout.addWidget(btn)
@@ -180,7 +201,7 @@ class MainWindow(QMainWindow):
             if uno.turn != 0:
                 for btn in self.buttons:
                     btn.setEnabled(False)
-            self.layout3.addLayout(hand_layout)
+            self.layer3.addLayout(hand_layout)
 
             # Creates the draw button
             draw_btn = QPushButton()
@@ -188,10 +209,17 @@ class MainWindow(QMainWindow):
             draw_btn.adjustSize()
             draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
             self.buttons.append(draw_btn)
-            self.layout3.addWidget(draw_btn)
+            self.layer3.addWidget(draw_btn)
 
-            # Positions the buttons
-            self.layout3.addStretch()
+        self.layer2.addStretch()
+
+        # Add the pages to the layout
+        self.layout3.addWidget(self.background)
+        self.layout3.addWidget(self.player_info)
+        self.layout3.addWidget(self.card_display)
+        # Change the interactables to be in the front
+        self.layout3.setCurrentIndex(1)
+        self.layout3.setCurrentIndex(2)
 
     def draw_card(self, uno):
         check = uno.players[0].drawCard(uno)
