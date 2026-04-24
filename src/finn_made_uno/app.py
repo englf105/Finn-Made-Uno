@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
     QStackedLayout,
     QHBoxLayout,
     QSlider,
+    QGridLayout,
 )
 
 
@@ -36,28 +37,63 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        # Page 1
+        # Home page
         self.home_page = QWidget()
-        self.layout1 = QHBoxLayout(self.home_page)
+        self.layout1 = QStackedLayout(self.home_page)
+        self.layout1.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.layout1.setContentsMargins(0,0,0,0)
+        self.layout1.setSpacing(0)
+        
+        # Create background layer
+        self.background = QWidget()
+        background_layer = QVBoxLayout(self.background)
 
-        # Create title
-        self.layout1.addWidget(QLabel("Finn Made Uno"))
+        # Create background image for the layer
+        background_image = QLabel()
+        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
+        background_image.setPixmap(file_path)
+        background_layer.setContentsMargins(0,0,0,0)
+        background_layer.setSpacing(0)
+        background_layer.addWidget(background_image)
 
-        # Create play button
+        # Create menu layer
+        self.menu = QWidget()
+        menu_layer = QGridLayout(self.menu)
+        self.menu.setStyleSheet("background: transparent; color: black;")
+
+        # Create title for menu
+        title = QLabel()
+        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/title.png") # Path to your image
+        title.setPixmap(pixmap)
+
+        # Create a new layout for the buttons
+        button_layout = QHBoxLayout()
+
+        # Create play button for menu
         start_button = QPushButton()
         start_button.setText("Play")
         start_button.setFixedSize(64, 32)
         start_button.clicked.connect(self.set_player_amount)
-        self.layout1.addWidget(start_button)
+        button_layout.addWidget(start_button)
 
-        # Create settings button
+        # Create settings button for menu
         settings_button = QPushButton()
         settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
         settings_button.setFixedSize(32, 32)
         settings_button.clicked.connect(self.open_settings)
-        self.layout1.addWidget(settings_button)
-        
-        self.home_page.setLayout(self.layout1)
+        button_layout.addWidget(settings_button)
+
+        button_layout.addStretch()
+
+        # Add the menu and buttons to the gridlayout
+        menu_layer.addWidget(title, 0, 1)
+        menu_layer.addLayout(button_layout, 1, 1)
+
+        # Add the pages to the layout
+        self.layout1.addWidget(self.background)
+        self.layout1.addWidget(self.menu)
+        # Change the interactables to be in the front
+        self.layout1.setCurrentIndex(1)
 
         # Page 2
         self.player_amount_selection = QWidget()
@@ -67,6 +103,8 @@ class MainWindow(QMainWindow):
         self.game_page = QWidget()
         self.layout3 = QStackedLayout(self.game_page)
         self.layout3.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.layout3.setContentsMargins(0,0,0,0)
+        self.layout3.setSpacing(0)
 
         # Add the pages to the layout
         self.stacked_widget.addWidget(self.home_page)
@@ -151,6 +189,8 @@ class MainWindow(QMainWindow):
         background_image = QLabel()
         file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
         background_image.setPixmap(file_path)
+        self.layer1.setContentsMargins(0,0,0,0)
+        self.layer1.setSpacing(0)
         self.layer1.addWidget(background_image)
 
         # Create player info layer
