@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QIcon, QPixmap, QFont
 from PyQt6.QtCore import QSettings, Qt, QSize
 from PyQt6.QtWidgets import (
     QApplication,
@@ -66,28 +66,31 @@ class MainWindow(QMainWindow):
         pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/title.png") # Path to your image
         title.setPixmap(pixmap)
 
-        # Create a new layout for the buttons
-        button_layout = QHBoxLayout()
-
         # Create play button for menu
         start_button = QPushButton()
-        start_button.setText("Play")
-        start_button.setFixedSize(64, 32)
+        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/play.png")
+        start_button.setIcon(QIcon(pixmap))
+        start_button.setIconSize(pixmap.size())
+        start_button.setStyleSheet("background-color: transparent; border: none;")
         start_button.clicked.connect(self.set_player_amount)
-        button_layout.addWidget(start_button)
 
         # Create settings button for menu
         settings_button = QPushButton()
-        settings_button.setIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/settings.png'))
-        settings_button.setFixedSize(32, 32)
+        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/settings.png")
+        settings_button.setIcon(QIcon(pixmap))
+        settings_button.setIconSize(pixmap.size())
+        settings_button.setStyleSheet("background-color: transparent; border: none;")
         settings_button.clicked.connect(self.open_settings)
-        button_layout.addWidget(settings_button)
 
+        # Create a new layout for the buttons
+        button_layout = QVBoxLayout()
+        button_layout.addWidget(start_button)
+        button_layout.addWidget(settings_button)
         button_layout.addStretch()
 
         # Add the menu and buttons to the gridlayout
-        menu_layer.addWidget(title, 0, 1)
-        menu_layer.addLayout(button_layout, 1, 1)
+        menu_layer.addWidget(title, 0, 2, 5, 3, alignment=Qt.AlignmentFlag.AlignCenter)
+        menu_layer.addLayout(button_layout, 6, 2, 5, 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Add the pages to the layout
         self.layout1.addWidget(self.background)
@@ -97,7 +100,10 @@ class MainWindow(QMainWindow):
 
         # Page 2
         self.player_amount_selection = QWidget()
-        self.layout2 = QVBoxLayout(self.player_amount_selection)
+        self.layout2 = QStackedLayout(self.player_amount_selection)
+        self.layout2.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.layout2.setContentsMargins(0,0,0,0)
+        self.layout2.setSpacing(0)
 
         # Page 3
         self.game_page = QWidget()
@@ -117,7 +123,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentIndex(1)
 
         slider_title = QLabel("Select the amount of players:")
-        self.layout2.addWidget(slider_title)
+        slider_title.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
         self.slider.setValue(4)
@@ -125,13 +131,36 @@ class MainWindow(QMainWindow):
         self.slider.setMaximum(6)
         self.slider.setSingleStep(1)
         self.slider.valueChanged.connect(self.handle_change)
-        self.layout2.addWidget(self.slider)
 
         self.slider_btn = QPushButton()
         self.slider_btn.setText(f"Play with {self.slider.value()} players")
+        self.slider_btn.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
         self.slider_btn.clicked.connect(self.play_game)
-        self.layout2.addWidget(self.slider_btn)
-        self.layout2.addStretch()
+
+        self.slider_stuff = QWidget()
+        self.slider_layout = QVBoxLayout(self.slider_stuff)
+        self.slider_layout.addWidget(slider_title)
+        self.slider_layout.addWidget(self.slider)
+        self.slider_layout.addWidget(self.slider_btn)
+        self.slider_layout.addStretch()
+
+        # Create background layer
+        self.slider_background = QWidget()
+        background_layer = QVBoxLayout(self.slider_background)
+
+        # Create background image for the layer
+        background_image = QLabel()
+        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
+        background_image.setPixmap(file_path)
+        background_layer.setContentsMargins(0,0,0,0)
+        background_layer.setSpacing(0)
+        background_layer.addWidget(background_image)
+
+        # Add the widgets
+        self.layout2.addWidget(self.slider_background)
+        self.layout2.addWidget(self.slider_stuff)
+        # Change the interactables to be in the front
+        self.layout2.setCurrentIndex(1)
 
     def handle_change(self):
         print(f"Slider moved to: {self.slider.value()}")
@@ -185,7 +214,6 @@ class MainWindow(QMainWindow):
         # Create background layer
         self.background = QWidget()
         self.layer1 = QVBoxLayout(self.background)
-
         background_image = QLabel()
         file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
         background_image.setPixmap(file_path)
