@@ -34,10 +34,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Finn Made Uno")
         self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
+        self.setFixedSize(800, 600)
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        # Home page
+        # Page 1
         self.home_page = QWidget()
         self.layout1 = QStackedLayout(self.home_page)
         self.layout1.setStackingMode(QStackedLayout.StackingMode.StackAll)
@@ -126,6 +127,23 @@ class MainWindow(QMainWindow):
         slider_title.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
+        self.slider.setStyleSheet("""
+            QSlider::groove:horizontal {
+                border: 1px solid #ffea63;
+                height: 10px;
+                background: #ffea63;
+                margin: 0px 0;
+                border-radius: 0px;
+            }
+
+            QSlider::handle:horizontal {
+                image: url(Finn-Made-Uno/src/finn_made_uno/assets/slider_button.png); /* Set the handle image here */
+                width: 32px;  /* Match handle width to your image */
+                height: 32px; /* Match handle height to your image */
+                margin: -16px 0; /* Use negative margin to make handle larger than groove */
+            }
+        """)
+        self.slider.setFixedWidth(400)
         self.slider.setValue(4)
         self.slider.setMinimum(2)
         self.slider.setMaximum(6)
@@ -133,15 +151,17 @@ class MainWindow(QMainWindow):
         self.slider.valueChanged.connect(self.handle_change)
 
         self.slider_btn = QPushButton()
+        self.slider_btn.setStyleSheet("background-color: #ffea63; color: #0d171f; border-radius: 0px; padding: 16px;")
         self.slider_btn.setText(f"Play with {self.slider.value()} players")
         self.slider_btn.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
         self.slider_btn.clicked.connect(self.play_game)
 
         self.slider_stuff = QWidget()
         self.slider_layout = QVBoxLayout(self.slider_stuff)
-        self.slider_layout.addWidget(slider_title)
-        self.slider_layout.addWidget(self.slider)
-        self.slider_layout.addWidget(self.slider_btn)
+        self.slider_layout.addStretch()
+        self.slider_layout.addWidget(slider_title, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.slider_layout.addWidget(self.slider, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.slider_layout.addWidget(self.slider_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         self.slider_layout.addStretch()
 
         # Create background layer
@@ -246,38 +266,39 @@ class MainWindow(QMainWindow):
             card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
             self.layer2.addWidget(card_count)
 
-        if uno.turn == 0:
+        hand_text = QLabel("Your hand:")
+        self.layer2.addWidget(hand_text)
 
-            hand_text = QLabel("Your hand:")
-            self.layer2.addWidget(hand_text)
+        # Creates new buttons to select cards
+        hand_layout = QHBoxLayout()
+        self.buttons = []
+        for card in uno.players[0].hand.cards:
+            btn = QPushButton()
+            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(card)}" + ".png"
+            pixmap = QPixmap(file_path)
+            btn.setIcon(QIcon(pixmap))
+            btn.setIconSize(pixmap.size())
+            btn.setStyleSheet("background-color: transparent; border: none;")
+            btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
+            self.buttons.append(btn)
+            hand_layout.addWidget(btn)
+        hand_layout.addStretch()
+        if uno.turn != 0:
+            for btn in self.buttons:
+                btn.setEnabled(False)
+        self.layer3.addLayout(hand_layout)
 
-            # Creates new buttons to select cards
-            hand_layout = QHBoxLayout()
-            self.buttons = []
-            for card in uno.players[0].hand.cards:
-                btn = QPushButton()
-                file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(card)}" + ".png"
-                btn.setIcon(QIcon(file_path))
-                btn.setIconSize(QSize(96, 128))
-                btn.setFixedSize(48, 64)
-                btn.adjustSize()
-                btn.setStyleSheet("background-color: transparent; border: none;")
-                btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
-                self.buttons.append(btn)
-                hand_layout.addWidget(btn)
-            hand_layout.addStretch()
-            if uno.turn != 0:
-                for btn in self.buttons:
-                    btn.setEnabled(False)
-            self.layer3.addLayout(hand_layout)
+        # Creates the draw button
+        draw_btn = QPushButton()
+        draw_btn.setText("Draw")
+        draw_btn.adjustSize()
+        draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
+        self.buttons.append(draw_btn)
+        self.layer3.addWidget(draw_btn)
 
-            # Creates the draw button
-            draw_btn = QPushButton()
-            draw_btn.setText("Draw")
-            draw_btn.adjustSize()
-            draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
-            self.buttons.append(draw_btn)
-            self.layer3.addWidget(draw_btn)
+        if uno.turn != 0:
+            for btn in self.buttons:
+                btn.setEnabled(False)
 
         self.layer2.addStretch()
 
@@ -303,18 +324,18 @@ class MainWindow(QMainWindow):
         for btn in self.buttons:
             btn.setEnabled(False)
         current_card = QLabel("What color do you want?:")
-        self.layout3.addWidget(current_card)
+        self.layer3.addWidget(current_card)
         self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
             btn.setText(str(color))
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.color_buttons.append(btn)
-            self.layout3.addWidget(btn)
+            self.layer3.addWidget(btn)
 
     def choose_color(self, uno, color):
         uno.display_card.color = color
-        uno.display_card.number = "<any>"
+        uno.display_card.number = "any"
         print(f"\n===== Color has been changed to {uno.display_card.color}! =====")
         uno.nextTurn()
         for btn in self.color_buttons:
