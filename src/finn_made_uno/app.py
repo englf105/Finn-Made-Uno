@@ -127,12 +127,12 @@ class MainWindow(QMainWindow):
         slider_title.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
+        self.slider.setFixedHeight(40)
         self.slider.setStyleSheet("""
             QSlider::groove:horizontal {
                 border: 1px solid #ffea63;
                 height: 10px;
                 background: #ffea63;
-                margin: 0px 0;
                 border-radius: 0px;
             }
 
@@ -323,15 +323,22 @@ class MainWindow(QMainWindow):
     def create_wild_buttons(self, uno):
         for btn in self.buttons:
             btn.setEnabled(False)
-        current_card = QLabel("What color do you want?:")
+        current_card = QLabel("Choose color:")
         self.layer3.addWidget(current_card)
+        color_layout = QHBoxLayout()
         self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
-            btn.setText(str(color))
+            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/change/" + color + "_change.png"
+            pixmap = QPixmap(file_path)
+            btn.setIcon(QIcon(pixmap))
+            btn.setIconSize(pixmap.size())
+            btn.setStyleSheet("background-color: transparent; border: none;")
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.color_buttons.append(btn)
-            self.layer3.addWidget(btn)
+            color_layout.addWidget(btn)
+        color_layout.addStretch()
+        self.layer3.addLayout(color_layout)
 
     def choose_color(self, uno, color):
         uno.display_card.color = color
