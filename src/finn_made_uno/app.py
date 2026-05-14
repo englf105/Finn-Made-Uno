@@ -245,7 +245,7 @@ class MainWindow(QMainWindow):
         # Create layer for player options
         #///////////////////////////////////////////////////////////////////////////
         self.card_display = QWidget()
-        self.layer3 = QVBoxLayout(self.card_display)
+        self.layer2 = QVBoxLayout(self.card_display)
         self.card_display.setStyleSheet("background: transparent; color: black;")
 
         self.buttons = []
@@ -273,7 +273,7 @@ class MainWindow(QMainWindow):
         middle_cards.addWidget(draw_btn)
 
         middle_cards.addStretch()
-        self.layer3.addLayout(middle_cards)
+        self.layer2.addLayout(middle_cards)
 
         # Creates new buttons to select cards
         hand_layout = QHBoxLayout()
@@ -284,12 +284,23 @@ class MainWindow(QMainWindow):
             pixmap = self.upscale_pixmap(pixmap, 2)
             btn.setIcon(QIcon(pixmap))
             btn.setIconSize(pixmap.size())
-            btn.setStyleSheet("background-color: transparent; border: none;")
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    padding: 1px;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: white;
+                    padding: 10px;
+                    border: none;
+                }
+            """)
             btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
             self.buttons.append(btn)
             hand_layout.addWidget(btn)
         hand_layout.addStretch()
-        self.layer3.addLayout(hand_layout)
+        self.layer2.addLayout(hand_layout)
 
         if uno.turn != 0:
             for btn in self.buttons:
@@ -300,7 +311,7 @@ class MainWindow(QMainWindow):
 
         # Create the general info layer
         self.general_info = QWidget()
-        self.layer2 = QVBoxLayout(self.general_info)
+        self.layer3 = QVBoxLayout(self.general_info)
         self.general_info.setStyleSheet("background: transparent; color: black;")
 
         # Display player info
@@ -308,9 +319,8 @@ class MainWindow(QMainWindow):
             current_player = str(uno.players.index(player) + 1)
             current_hand =  str(len(player.hand.cards))
             card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
-            self.layer2.addWidget(card_count)
-
-        self.layer2.addStretch()
+            self.layer3.addWidget(card_count)
+        self.layer3.addStretch()
 
 
         # Add the pages to the layout
@@ -347,29 +357,22 @@ class MainWindow(QMainWindow):
         for btn in self.buttons:
             btn.setEnabled(False)
         current_card = QLabel("Choose color:")
-        self.layer3.addWidget(current_card)
+        self.layer2.addWidget(current_card)
         color_layout = QHBoxLayout()
         self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
             file_path = "Finn-Made-Uno/src/finn_made_uno/assets/change/" + color + "_change.png"
             pixmap = QPixmap(file_path)
-            new_width = pixmap.width() * 2
-            new_height = pixmap.height() * 2
-            scaled_pixmap = pixmap.scaled(
-                new_width, 
-                new_height, 
-                Qt.AspectRatioMode.KeepAspectRatio, 
-                Qt.TransformationMode.SmoothTransformation
-            )
-            btn.setIcon(QIcon(scaled_pixmap))
-            btn.setIconSize(scaled_pixmap.size())
+            pixmap = self.upscale_pixmap(pixmap, 2)
+            btn.setIcon(QIcon(pixmap))
+            btn.setIconSize(pixmap.size())
             btn.setStyleSheet("background-color: transparent; border: none;")
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.color_buttons.append(btn)
             color_layout.addWidget(btn)
         color_layout.addStretch()
-        self.layer3.addLayout(color_layout)
+        self.layer2.addLayout(color_layout)
 
     def choose_color(self, uno, color):
         uno.display_card.color = color
