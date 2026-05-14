@@ -231,33 +231,77 @@ class MainWindow(QMainWindow):
         # Get rid of previous widgets
         self.clear_layout(self.layout3)
 
-        # Create background layer
+        # Background Layer
+        # //////////////////////////////////////////////////////////////////////////
         self.background = QWidget()
         self.layer1 = QVBoxLayout(self.background)
         background_image = QLabel()
-        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
-        background_image.setPixmap(file_path)
+        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png"
+        background_image.setPixmap(QPixmap(file_path))
         self.layer1.setContentsMargins(0,0,0,0)
         self.layer1.setSpacing(0)
         self.layer1.addWidget(background_image)
 
-        # Create player info layer
-        self.player_info = QWidget()
-        self.layer2 = QVBoxLayout(self.player_info)
-        self.player_info.setStyleSheet("background: transparent; color: black;")
-
-        # Create card info layer
+        # Create layer for player options
+        #///////////////////////////////////////////////////////////////////////////
         self.card_display = QWidget()
         self.layer3 = QVBoxLayout(self.card_display)
         self.card_display.setStyleSheet("background: transparent; color: black;")
 
-        # Displays turn info
-        current_card = QLabel("Current Card:")
-        self.layer2.addWidget(current_card)
+        self.buttons = []
+        middle_cards = QHBoxLayout()
+
+        # Create a QLabel that shows the current card
         current_card_display = QLabel()
-        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(uno.display_card)}" + ".png")
-        current_card_display.setPixmap(file_path)
-        self.layer2.addWidget(current_card_display)
+        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/"
+        file_path += f"{str(uno.display_card)}" + ".png"
+        pixmap = QPixmap(file_path)
+        pixmap = self.upscale_pixmap(pixmap, 2)
+        current_card_display.setPixmap(QPixmap(pixmap))
+        middle_cards.addWidget(current_card_display)
+
+        # Creates the draw button
+        draw_btn = QPushButton()
+        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/card_back.png"
+        pixmap = QPixmap(file_path)
+        pixmap = self.upscale_pixmap(pixmap, 2)
+        draw_btn.setIcon(QIcon(pixmap))
+        draw_btn.setIconSize(pixmap.size())
+        draw_btn.setStyleSheet("background-color: transparent; border: none;")
+        draw_btn.clicked.connect(lambda checked: self.draw_card(uno))
+        self.buttons.append(draw_btn)
+        middle_cards.addWidget(draw_btn)
+
+        middle_cards.addStretch()
+        self.layer3.addLayout(middle_cards)
+
+        # Creates new buttons to select cards
+        hand_layout = QHBoxLayout()
+        for card in uno.players[0].hand.cards:
+            btn = QPushButton()
+            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + str(card) + ".png"
+            pixmap = QPixmap(file_path)
+            pixmap = self.upscale_pixmap(pixmap, 2)
+            btn.setIcon(QIcon(pixmap))
+            btn.setIconSize(pixmap.size())
+            btn.setStyleSheet("background-color: transparent; border: none;")
+            btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
+            self.buttons.append(btn)
+            hand_layout.addWidget(btn)
+        hand_layout.addStretch()
+        self.layer3.addLayout(hand_layout)
+
+        if uno.turn != 0:
+            for btn in self.buttons:
+                btn.setEnabled(False)
+
+        # General Info
+        # /////////////////////////////////////////////////////////////////////////
+
+        # Create the general info layer
+        self.general_info = QWidget()
+        self.layer2 = QVBoxLayout(self.general_info)
+        self.general_info.setStyleSheet("background: transparent; color: black;")
 
         # Display player info
         for player in uno.players:
@@ -266,49 +310,28 @@ class MainWindow(QMainWindow):
             card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
             self.layer2.addWidget(card_count)
 
-        hand_text = QLabel("Your hand:")
-        self.layer2.addWidget(hand_text)
-
-        # Creates new buttons to select cards
-        hand_layout = QHBoxLayout()
-        self.buttons = []
-        for card in uno.players[0].hand.cards:
-            btn = QPushButton()
-            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + f"{str(card)}" + ".png"
-            pixmap = QPixmap(file_path)
-            btn.setIcon(QIcon(pixmap))
-            btn.setIconSize(pixmap.size())
-            btn.setStyleSheet("background-color: transparent; border: none;")
-            btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
-            self.buttons.append(btn)
-            hand_layout.addWidget(btn)
-        hand_layout.addStretch()
-        if uno.turn != 0:
-            for btn in self.buttons:
-                btn.setEnabled(False)
-        self.layer3.addLayout(hand_layout)
-
-        # Creates the draw button
-        draw_btn = QPushButton()
-        draw_btn.setText("Draw")
-        draw_btn.adjustSize()
-        draw_btn.clicked.connect(lambda checked, i = card: self.draw_card(uno))
-        self.buttons.append(draw_btn)
-        self.layer3.addWidget(draw_btn)
-
-        if uno.turn != 0:
-            for btn in self.buttons:
-                btn.setEnabled(False)
-
         self.layer2.addStretch()
 
+
         # Add the pages to the layout
+        # //////////////////////////////////////////////////////////////////////////
         self.layout3.addWidget(self.background)
-        self.layout3.addWidget(self.player_info)
+        self.layout3.addWidget(self.general_info)
         self.layout3.addWidget(self.card_display)
         # Change the interactables to be in the front
         self.layout3.setCurrentIndex(1)
         self.layout3.setCurrentIndex(2)
+
+    def upscale_pixmap(self, pixmap, upscale_int):
+        new_width = pixmap.width() * upscale_int
+        new_height = pixmap.height() * upscale_int
+        scaled_pixmap = pixmap.scaled(
+            new_width, 
+            new_height, 
+            Qt.AspectRatioMode.KeepAspectRatio, 
+            Qt.TransformationMode.FastTransformation
+        )
+        return scaled_pixmap
 
     def draw_card(self, uno):
         check = uno.players[0].drawCard(uno)
@@ -331,8 +354,16 @@ class MainWindow(QMainWindow):
             btn = QPushButton()
             file_path = "Finn-Made-Uno/src/finn_made_uno/assets/change/" + color + "_change.png"
             pixmap = QPixmap(file_path)
-            btn.setIcon(QIcon(pixmap))
-            btn.setIconSize(pixmap.size())
+            new_width = pixmap.width() * 2
+            new_height = pixmap.height() * 2
+            scaled_pixmap = pixmap.scaled(
+                new_width, 
+                new_height, 
+                Qt.AspectRatioMode.KeepAspectRatio, 
+                Qt.TransformationMode.SmoothTransformation
+            )
+            btn.setIcon(QIcon(scaled_pixmap))
+            btn.setIconSize(scaled_pixmap.size())
             btn.setStyleSheet("background-color: transparent; border: none;")
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.color_buttons.append(btn)
