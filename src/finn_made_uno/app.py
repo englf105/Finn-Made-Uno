@@ -232,7 +232,7 @@ class MainWindow(QMainWindow):
         self.clear_layout(self.layout3)
 
         # Background Layer
-        # //////////////////////////////////////////////////////////////////////////
+        # /////////////////////////////////////////////////////////////////////
         self.background = QWidget()
         self.layer1 = QVBoxLayout(self.background)
         background_image = QLabel()
@@ -242,14 +242,8 @@ class MainWindow(QMainWindow):
         self.layer1.setSpacing(0)
         self.layer1.addWidget(background_image)
 
-        # Create layer for player options
-        #///////////////////////////////////////////////////////////////////////////
-        self.card_display = QWidget()
-        self.layer2 = QVBoxLayout(self.card_display)
-        self.card_display.setStyleSheet("background: transparent; color: black;")
-
-        self.buttons = []
-        middle_cards = QHBoxLayout()
+        # Player options layer
+        #//////////////////////////////////////////////////////////////////////
 
         # Create a QLabel that shows the current card
         current_card_display = QLabel()
@@ -258,7 +252,9 @@ class MainWindow(QMainWindow):
         pixmap = QPixmap(file_path)
         pixmap = self.upscale_pixmap(pixmap, 2)
         current_card_display.setPixmap(QPixmap(pixmap))
-        middle_cards.addWidget(current_card_display)
+
+        # Create a list of all the buttons
+        self.buttons = []
 
         # Creates the draw button
         draw_btn = QPushButton()
@@ -267,19 +263,26 @@ class MainWindow(QMainWindow):
         pixmap = self.upscale_pixmap(pixmap, 2)
         draw_btn.setIcon(QIcon(pixmap))
         draw_btn.setIconSize(pixmap.size())
-        draw_btn.setStyleSheet("background-color: transparent; border: none;")
+        draw_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    padding: 1px;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: white;
+                    padding: 10px;
+                    border: none;
+                }
+            """)
         draw_btn.clicked.connect(lambda checked: self.draw_card(uno))
         self.buttons.append(draw_btn)
-        middle_cards.addWidget(draw_btn)
-
-        middle_cards.addStretch()
-        self.layer2.addLayout(middle_cards)
 
         # Creates new buttons to select cards
-        hand_layout = QHBoxLayout()
         for card in uno.players[0].hand.cards:
             btn = QPushButton()
-            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/" + str(card) + ".png"
+            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/"
+            file_path += str(card) + ".png"
             pixmap = QPixmap(file_path)
             pixmap = self.upscale_pixmap(pixmap, 2)
             btn.setIcon(QIcon(pixmap))
@@ -297,33 +300,54 @@ class MainWindow(QMainWindow):
                 }
             """)
             btn.clicked.connect(lambda checked, i = card: self.play_card(uno, i))
+            if uno.turn != 0: btn.setEnabled(False)
             self.buttons.append(btn)
+
+        # Add the middle widgets to a layout with stretches
+        middle_cards = QHBoxLayout()
+        middle_cards.addStretch()
+        middle_cards.addWidget(current_card_display, alignment=Qt.AlignmentFlag.AlignCenter)
+        middle_cards.addWidget(draw_btn)
+        middle_cards.addStretch()
+
+        # Add card buttons to layout with stretches
+        hand_layout = QHBoxLayout()
+        hand_layout.addStretch()
+        for btn in self.buttons[1:]:
             hand_layout.addWidget(btn)
         hand_layout.addStretch()
+        
+        # Create layer2 and add layouts & stretches
+        self.card_display = QWidget()
+        self.layer2 = QVBoxLayout(self.card_display)
+        self.card_display.setStyleSheet("background: transparent;")
+        self.layer2.setContentsMargins(40, 40, 40, 40)
+        self.layer2.addStretch()
+        self.layer2.addLayout(middle_cards)
+        self.layer2.addStretch()
         self.layer2.addLayout(hand_layout)
 
-        if uno.turn != 0:
-            for btn in self.buttons:
-                btn.setEnabled(False)
-
-        # General Info
-        # /////////////////////////////////////////////////////////////////////////
+        # General Info layer
+        # /////////////////////////////////////////////////////////////////////
 
         # Create the general info layer
         self.general_info = QWidget()
         self.layer3 = QVBoxLayout(self.general_info)
-        self.general_info.setStyleSheet("background: transparent; color: black;")
+        self.general_info.setStyleSheet("background: transparent;")
 
         # Display player info
         for player in uno.players:
             current_player = str(uno.players.index(player) + 1)
             current_hand =  str(len(player.hand.cards))
-            card_count = QLabel(f"Player {current_player}'s card amount: " + current_hand)
+            card_count_text = f"Player {current_player}'s card amount: "
+            card_count_text += current_hand
+            card_count = QLabel(card_count_text)
+            card_count.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
             self.layer3.addWidget(card_count)
         self.layer3.addStretch()
 
 
-        # Add the pages to the layout
+        # Add Layers to Layout3
         # //////////////////////////////////////////////////////////////////////////
         self.layout3.addWidget(self.background)
         self.layout3.addWidget(self.general_info)
@@ -354,25 +378,53 @@ class MainWindow(QMainWindow):
         if check: self.game_loop(uno)
 
     def create_wild_buttons(self, uno):
-        for btn in self.buttons:
-            btn.setEnabled(False)
+        # Create the wild layer
+        # //////////////////////////////////////////////////////////////////////////
+        self.wild_layer = QWidget()
+        self.layer4 = QVBoxLayout(self.wild_layer)
+        self.wild_layer.setStyleSheet("background: transparent; color: black;")
+        self.layer4.addStretch()
+        self.layer4.addStretch()
+
+        # Set label instruction
         current_card = QLabel("Choose color:")
-        self.layer2.addWidget(current_card)
+        current_card.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+        self.layer4.addWidget(current_card, alignment=Qt.AlignmentFlag.AlignCenter)
+        
+
+        # Create the buttons for choosing your color
         color_layout = QHBoxLayout()
+        color_layout.addStretch()
         self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
-            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/change/" + color + "_change.png"
+            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/wild/" + color + "_change.png"
             pixmap = QPixmap(file_path)
             pixmap = self.upscale_pixmap(pixmap, 2)
             btn.setIcon(QIcon(pixmap))
             btn.setIconSize(pixmap.size())
-            btn.setStyleSheet("background-color: transparent; border: none;")
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    padding: 1px;
+                    border: none;
+                }
+                QPushButton:hover {
+                    background-color: white;
+                    padding: 10px;
+                    border: none;
+                }
+            """)
             btn.clicked.connect(lambda checked, i = color: self.choose_color(uno, i))
             self.color_buttons.append(btn)
             color_layout.addWidget(btn)
         color_layout.addStretch()
-        self.layer2.addLayout(color_layout)
+        self.layer4.addLayout(color_layout)
+        self.layer4.addStretch()
+
+        # Add the wild layer to the main layer
+        self.layout3.addWidget(self.wild_layer)
+        self.layout3.setCurrentIndex(3)
 
     def choose_color(self, uno, color):
         uno.display_card.color = color
@@ -402,7 +454,6 @@ class MainWindow(QMainWindow):
                 else:
                     # If the item is another layout, clear it recursively
                     self.clear_layout(item.layout())
-
 
     def open_settings(self):
         """Slot to handle the button click and open the settings dialog."""
