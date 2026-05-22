@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtGui import QIcon, QPixmap, QFont
+from PyQt6.QtGui import QIcon, QPixmap, QFont, QTransform
 from PyQt6.QtCore import QSettings, Qt, QSize
 from PyQt6.QtWidgets import (
     QApplication,
@@ -334,16 +334,55 @@ class MainWindow(QMainWindow):
         self.general_info = QWidget()
         self.layer3 = QVBoxLayout(self.general_info)
         self.general_info.setStyleSheet("background: transparent;")
+        self.layer3.setContentsMargins(40, 40, 40, 40)
 
         # Display player info
-        for player in uno.players:
-            current_player = str(uno.players.index(player) + 1)
-            current_hand =  str(len(player.hand.cards))
-            card_count_text = f"Player {current_player}'s card amount: "
-            card_count_text += current_hand
-            card_count = QLabel(card_count_text)
-            card_count.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
-            self.layer3.addWidget(card_count)
+        for player in uno.players[1:]:
+            
+            player_cards = QHBoxLayout()
+
+            # Container for the cards
+            cards_widget = QWidget()
+            cards_widget.setStyleSheet("background-color: transparent;")
+            
+            # Use QStackedLayout to overlay
+            self.stack_layout = QStackedLayout()
+            self.stack_layout.setStackingMode(QStackedLayout.StackingMode.StackAll)
+            cards_widget.setLayout(self.stack_layout)
+
+            for i, card in enumerate(player.hand.cards):
+                card = QLabel()
+
+                file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/card_back.png"
+                pixmap = QPixmap(file_path)
+                pixmap = self.upscale_pixmap(pixmap, 2)
+                card.setPixmap(pixmap)
+
+
+                card.setStyleSheet("""QLabel {background-color: transparent;}""")
+                card.setContentsMargins((i+1)*20, 0, 0, 0)
+
+                self.stack_layout.addWidget(card)
+
+            # Number that tells user how many cards this player has
+            card_amount = QLabel()
+            card_amount.setText(str(len(player.hand.cards)))
+            card_amount.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+            card_amount.setFixedHeight(30) 
+            card_amount.setStyleSheet("""
+                QLabel {
+                    background: #ffea63;
+                    border-radius: 5px;
+                    padding: 0px 1px 0px 1px;           
+                }
+            """)
+
+            
+            player_cards.addWidget(card_amount)
+            player_cards.addWidget(cards_widget)
+            player_cards.addStretch()
+            self.layer3.addLayout(player_cards)
+
         self.layer3.addStretch()
 
 
