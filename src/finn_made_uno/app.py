@@ -1,6 +1,6 @@
 import sys
 import time
-from PyQt6.QtGui import QIcon, QPixmap, QFont, QTransform
+from PyQt6.QtGui import QIcon, QPixmap, QFont, QTransform, QFontDatabase
 from PyQt6.QtCore import QSettings, Qt, QSize
 from PyQt6.QtWidgets import (
     QApplication,
@@ -29,10 +29,19 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.settings = SettingsWindow()
+
+        # Load the font
+        font_id = QFontDatabase.addApplicationFont("src/finn_made_uno/assets/DisneyHeroic.ttf")
+        if font_id == -1:
+            print("Error: Font could not be loaded!")
+        else:
+            # Retrieve the font family name from the ID
+            font_families = QFontDatabase.applicationFontFamilies(font_id)
+            self.font_family = font_families[0]
         
         # Central Layout
         self.setWindowTitle("Finn Made Uno")
-        self.setWindowIcon(QIcon('Finn-Made-Uno/src/finn_made_uno/assets/uno_icon_32.png'))
+        self.setWindowIcon(QIcon('src/finn_made_uno/assets/uno_icon_32.png'))
         self.setGeometry(800, 600, 800, 600)
         self.setFixedSize(800, 600)
         self.stacked_widget = QStackedWidget()
@@ -51,7 +60,7 @@ class MainWindow(QMainWindow):
 
         # Create background image for the layer
         background_image = QLabel()
-        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
+        file_path = QPixmap("src/finn_made_uno/assets/uno_background.png")
         background_image.setPixmap(file_path)
         background_layer.setContentsMargins(0,0,0,0)
         background_layer.setSpacing(0)
@@ -64,12 +73,12 @@ class MainWindow(QMainWindow):
 
         # Create title for menu
         title = QLabel()
-        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/title.png") # Path to your image
+        pixmap = QPixmap("src/finn_made_uno/assets/title.png") # Path to your image
         title.setPixmap(pixmap)
 
         # Create play button for menu
         start_button = QPushButton()
-        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/play.png")
+        pixmap = QPixmap("src/finn_made_uno/assets/play.png")
         start_button.setIcon(QIcon(pixmap))
         start_button.setIconSize(pixmap.size())
         start_button.setStyleSheet("background-color: transparent; border: none;")
@@ -77,7 +86,7 @@ class MainWindow(QMainWindow):
 
         # Create settings button for menu
         settings_button = QPushButton()
-        pixmap = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/settings.png")
+        pixmap = QPixmap("src/finn_made_uno/assets/settings.png")
         settings_button.setIcon(QIcon(pixmap))
         settings_button.setIconSize(pixmap.size())
         settings_button.setStyleSheet("background-color: transparent; border: none;")
@@ -124,7 +133,8 @@ class MainWindow(QMainWindow):
         self.stacked_widget.setCurrentIndex(1)
 
         slider_title = QLabel("Select the amount of players:")
-        slider_title.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+        slider_title.setStyleSheet("color: black;")
+        slider_title.setFont(QFont(self.font_family, 16))
 
         self.slider = QSlider(Qt.Orientation.Horizontal)
         self.slider.setFixedHeight(40)
@@ -137,10 +147,11 @@ class MainWindow(QMainWindow):
             }
 
             QSlider::handle:horizontal {
-                image: url(Finn-Made-Uno/src/finn_made_uno/assets/slider_button.png); /* Set the handle image here */
+                image: url(src/finn_made_uno/assets/slider_button.png); /* Set the handle image here */
                 width: 32px;  /* Match handle width to your image */
                 height: 32px; /* Match handle height to your image */
                 margin: -16px 0; /* Use negative margin to make handle larger than groove */
+                                  
             }
         """)
         self.slider.setFixedWidth(400)
@@ -151,9 +162,9 @@ class MainWindow(QMainWindow):
         self.slider.valueChanged.connect(self.handle_change)
 
         self.slider_btn = QPushButton()
-        self.slider_btn.setStyleSheet("background-color: #ffea63; color: #0d171f; border-radius: 0px; padding: 16px;")
+        self.slider_btn.setStyleSheet("background-color: #ffea63; color: #0d171f; border-radius: 0px; padding: 16px; color: black;")
         self.slider_btn.setText(f"Play with {self.slider.value()} players")
-        self.slider_btn.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+        self.slider_btn.setFont(QFont(self.font_family, 16))
         self.slider_btn.clicked.connect(self.play_game)
 
         self.slider_stuff = QWidget()
@@ -170,7 +181,7 @@ class MainWindow(QMainWindow):
 
         # Create background image for the layer
         background_image = QLabel()
-        file_path = QPixmap("Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png")
+        file_path = QPixmap("src/finn_made_uno/assets/uno_background.png")
         background_image.setPixmap(file_path)
         background_layer.setContentsMargins(0,0,0,0)
         background_layer.setSpacing(0)
@@ -236,7 +247,7 @@ class MainWindow(QMainWindow):
         self.background = QWidget()
         self.layer1 = QVBoxLayout(self.background)
         background_image = QLabel()
-        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/uno_background.png"
+        file_path = "src/finn_made_uno/assets/uno_background.png"
         background_image.setPixmap(QPixmap(file_path))
         self.layer1.setContentsMargins(0,0,0,0)
         self.layer1.setSpacing(0)
@@ -247,7 +258,7 @@ class MainWindow(QMainWindow):
 
         # Create a QLabel that shows the current card
         current_card_display = QLabel()
-        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/"
+        file_path = "src/finn_made_uno/assets/cards/"
         file_path += f"{str(uno.display_card)}" + ".png"
         pixmap = QPixmap(file_path)
         pixmap = self.upscale_pixmap(pixmap, 2)
@@ -258,7 +269,7 @@ class MainWindow(QMainWindow):
 
         # Creates the draw button
         draw_btn = QPushButton()
-        file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/card_back.png"
+        file_path = "src/finn_made_uno/assets/cards/card_back.png"
         pixmap = QPixmap(file_path)
         pixmap = self.upscale_pixmap(pixmap, 2)
         draw_btn.setIcon(QIcon(pixmap))
@@ -281,7 +292,7 @@ class MainWindow(QMainWindow):
         # Creates new buttons to select cards
         for card in uno.players[0].hand.cards:
             btn = QPushButton()
-            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/"
+            file_path = "src/finn_made_uno/assets/cards/"
             file_path += str(card) + ".png"
             pixmap = QPixmap(file_path)
             pixmap = self.upscale_pixmap(pixmap, 2)
@@ -353,7 +364,7 @@ class MainWindow(QMainWindow):
             for i, card in enumerate(player.hand.cards):
                 card = QLabel()
 
-                file_path = "Finn-Made-Uno/src/finn_made_uno/assets/cards/card_back.png"
+                file_path = "src/finn_made_uno/assets/cards/card_back.png"
                 pixmap = QPixmap(file_path)
                 pixmap = self.upscale_pixmap(pixmap, 2)
                 card.setPixmap(pixmap)
@@ -367,11 +378,12 @@ class MainWindow(QMainWindow):
             # Number that tells user how many cards this player has
             card_amount = QLabel()
             card_amount.setText(str(len(player.hand.cards)))
-            card_amount.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+            card_amount.setFont(QFont(self.font_family, 16))
             card_amount.setFixedHeight(30) 
             card_amount.setStyleSheet("""
                 QLabel {
                     background: #ffea63;
+                    color: black;
                     border-radius: 5px;
                     padding: 0px 1px 0px 1px;           
                 }
@@ -427,7 +439,8 @@ class MainWindow(QMainWindow):
 
         # Set label instruction
         current_card = QLabel("Choose color:")
-        current_card.setFont(QFont("Disney Heroic", 16, QFont.Weight.Bold))
+        current_card.setStyleSheet("color: black;")
+        current_card.setFont(QFont(self.font_family, 16))
         self.layer4.addWidget(current_card, alignment=Qt.AlignmentFlag.AlignCenter)
         
 
@@ -437,7 +450,7 @@ class MainWindow(QMainWindow):
         self.color_buttons = []
         for color in Card.color[:-1]:
             btn = QPushButton()
-            file_path = "Finn-Made-Uno/src/finn_made_uno/assets/wild/" + color + "_change.png"
+            file_path = "src/finn_made_uno/assets/wild/" + color + "_change.png"
             pixmap = QPixmap(file_path)
             pixmap = self.upscale_pixmap(pixmap, 2)
             btn.setIcon(QIcon(pixmap))
