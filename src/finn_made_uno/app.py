@@ -1,7 +1,6 @@
 import sys
-import time
 from PyQt6.QtGui import QIcon, QPixmap, QFont, QTransform, QFontDatabase
-from PyQt6.QtCore import QSettings, Qt, QSize
+from PyQt6.QtCore import QSettings, Qt, QSize, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -223,14 +222,20 @@ class MainWindow(QMainWindow):
     def game_loop(self, uno):
         """ Game Loop """
         if uno.playerHasCards():
+            
             # Displays the turn info
             uno.displayTurnInfo() # In terminal
-
-            self.update_options(uno)
 
             # Ai plays its turn if its not the players
             if uno.turn != 0:
                 uno.playerTurn()
+
+            self.update_options(uno)
+
+            if uno.turn != 0:
+                QApplication.processEvents()
+                import time
+                time.sleep(0.5)
                 self.game_loop(uno)
 
         else: 
@@ -290,6 +295,8 @@ class MainWindow(QMainWindow):
         self.buttons.append(draw_btn)
 
         # Creates new buttons to select cards
+        from card import Card
+        uno.players[0].hand.cards.sort(key=lambda s: (Card.color.index(s.color), s.number))
         for card in uno.players[0].hand.cards:
             btn = QPushButton()
             file_path = "src/finn_made_uno/assets/cards/"
@@ -371,7 +378,7 @@ class MainWindow(QMainWindow):
 
 
                 card.setStyleSheet("""QLabel {background-color: transparent;}""")
-                card.setContentsMargins((i+1)*20, 0, 0, 0)
+                card.setContentsMargins((i+1) * 20, 0, 0, 0)
 
                 self.stack_layout.addWidget(card)
 
@@ -389,7 +396,7 @@ class MainWindow(QMainWindow):
                 }
             """)
 
-            
+            # Add all the stuff together
             player_cards.addWidget(card_amount)
             player_cards.addWidget(cards_widget)
             player_cards.addStretch()
@@ -443,7 +450,6 @@ class MainWindow(QMainWindow):
         current_card.setFont(QFont(self.font_family, 16))
         self.layer4.addWidget(current_card, alignment=Qt.AlignmentFlag.AlignCenter)
         
-
         # Create the buttons for choosing your color
         color_layout = QHBoxLayout()
         color_layout.addStretch()
