@@ -1,6 +1,6 @@
 import sys
-from PyQt6.QtGui import QIcon, QPixmap, QFont, QTransform, QFontDatabase
-from PyQt6.QtCore import QSettings, Qt, QSize, QTimer
+from PyQt6.QtGui import QIcon, QPixmap, QFont, QFontDatabase
+from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtWidgets import (
     QApplication,
     QLabel,
@@ -21,7 +21,6 @@ from PyQt6.QtWidgets import (
 from functools import partial
 from game import Game
 from card import Card
-import threading
 
 
 class MainWindow(QMainWindow):
