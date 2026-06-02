@@ -497,6 +497,9 @@ class MainWindow(QMainWindow):
         for btn in self.color_buttons:
             btn.deleteLater()
         self.game_loop(uno)
+        QApplication.processEvents()
+        import time
+        time.sleep(0.5)
 
     def game_win(self, uno):
         """ Game Loop Ends """
