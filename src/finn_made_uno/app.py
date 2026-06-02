@@ -427,12 +427,18 @@ class MainWindow(QMainWindow):
     def draw_card(self, uno):
         check = uno.players[0].drawCard(uno)
         if check: self.game_loop(uno)
+        QApplication.processEvents()
+        import time
+        time.sleep(0.5)
 
     def play_card(self, uno, card):
         check = uno.players[0].playCard(uno, card)
         if card.color == "wild":
             self.create_wild_buttons(uno)
         if check: self.game_loop(uno)
+        QApplication.processEvents()
+        import time
+        time.sleep(0.5)
 
     def create_wild_buttons(self, uno):
         # Create the wild layer
